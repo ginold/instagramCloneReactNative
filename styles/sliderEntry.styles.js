@@ -23,17 +23,6 @@ export const getSliderContainerWidth = (screen) => {
     }
   }
 }
-export const getTextContainerStyle = (screen) => {
-  return {
-    height: slideHeight * .3,
-    justifyContent: 'center',
-    paddingTop: 10 - entryBorderRadius,
-    paddingBottom: 10,
-    paddingHorizontal: 16,
-    borderBottomLeftRadius: entryBorderRadius,
-    borderBottomRightRadius: entryBorderRadius
-  }
-}
 export const getShadowStyle = (screen) => {
   let defaultStyles = {
     position: 'absolute',
@@ -41,7 +30,7 @@ export const getShadowStyle = (screen) => {
     shadowOpacity: 0.25,
     shadowOffset: { width: 5, height: 5 },
     shadowRadius: 15,
-    elevation: 3, // for android
+    elevation: 13, // for android
     // background color must be set
     backgroundColor: "black",
     borderRadius: entryBorderRadius,
@@ -69,7 +58,9 @@ export default StyleSheet.create({
     marginBottom: IS_IOS ? 0 : -1, // Prevent a random Android rendering issue
     backgroundColor: 'white',
     borderTopLeftRadius: entryBorderRadius,
-    borderTopRightRadius: entryBorderRadius
+    borderTopRightRadius: entryBorderRadius,
+    borderBottomLeftRadius: entryBorderRadius,
+    borderBottomRightRadius: entryBorderRadius
   },
   image: {
     ...StyleSheet.absoluteFillObject,

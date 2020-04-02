@@ -1,19 +1,18 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Divider, Icon, Layout, Text, Avatar } from '@ui-kitten/components';
+import { Divider, Layout, Text, Avatar } from '@ui-kitten/components';
 import moment from "moment";
 
-
 export const Comment = (props) => {
-  const { author, content, date } = props.comment
+  const { author, text, date } = props.comment
   return (
     <>
       <Layout style={styles.comment}>
         <Avatar style={styles.avatar} source={require('../img/2.jpg')} />
         <Layout style={styles.container}>
-          <Text>
-            <Text style={styles.author}>{author}: &nbsp;</Text>
-            <Text style={styles.content}>{content}</Text>
+          <Text style={styles.authorContent}>
+            <Text style={styles.author}>{author.displayName}: &nbsp;</Text>
+            <Text style={styles.content}>{text}</Text>
           </Text>
           <Layout style={styles.footer}>
             <Text >{moment(date).fromNow()}</Text>
@@ -31,7 +30,7 @@ const styles = StyleSheet.create({
     opacity: 0.8
   },
   comment: {
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
 
@@ -55,6 +54,7 @@ const styles = StyleSheet.create({
   date: {
 
   },
-  content: {
+  authorContent: {
+    width: '100%'
   }
 })

@@ -4,52 +4,28 @@ import { StyleSheet, Dimensions, Text, StatusBar, SafeAreaView } from 'react-nat
 import SliderEntry from './SliderEntry'
 import { Layout } from '@ui-kitten/components';
 import { connect } from 'react-redux'
-import { slideWidth } from '../styles/sliderEntry.styles'
 
-const photos = [
-  {
-    title: 'Beautiful and dramatic Antelope Canyon',
-    subtitle: 'Lorem ipsum dolor sit amet et nuncat mergitur',
-    illustration: 'https://i.imgur.com/UYiroysl.jpg'
-  },
-  {
-    title: 'Earlier this morning, NYC',
-    subtitle: 'Lorem ipsum dolor sit amet',
-    illustration: 'https://i.imgur.com/UPrs1EWl.jpg'
-  },
-  {
-    title: 'White Pocket Sunset',
-    subtitle: 'Lorem ipsum dolor sit amet et nuncat ',
-    illustration: 'https://i.imgur.com/MABUbpDl.jpg'
-  },
-  {
-    title: 'Beautiful and dramatic Antelope Canyon',
-    subtitle: 'Lorem ipsum dolor sit amet et nuncat mergitur',
-    illustration: 'https://i.imgur.com/UYiroysl.jpg'
-  },
-  {
-    title: 'Earlier this morning, NYC',
-    subtitle: 'Lorem ipsum dolor sit amet',
-    illustration: 'https://i.imgur.com/UPrs1EWl.jpg'
-  },
-  {
-    title: 'White Pocket Sunset',
-    subtitle: 'Lorem ipsum dolor sit amet et nuncat ',
-    illustration: 'https://i.imgur.com/MABUbpDl.jpg'
-  }
-]
 const viewportWidth = Dimensions.get('window').width;
 const feedSliderWidth = viewportWidth - (40 + 20) - 30 // padding + margin
 
 class SliderPostPhotos extends Component {
-
   constructor(props) {
     super(props);
+    this.setPictures = this.setPictures.bind(this)
     this.state = {
-      sliderActiveSlide: 1, sliderWidth: 100, itemWidth: 100
+      sliderActiveSlide: 1, sliderWidth: 100, itemWidth: 100, pictures: this.setPictures()
     };
   }
+  setPictures() {
+    let pictures = []
 
+    this.props.pictures.forEach(url => {
+      pictures.push({
+        illustration: url
+      })
+    })
+    return pictures
+  }
   _renderItemWithParallax({ item, index, screen }, parallaxProps) {
     return (
       <SliderEntry
@@ -79,7 +55,7 @@ class SliderPostPhotos extends Component {
       <Layout style={styles.exampleContainer}>
         <Carousel
           ref={component => this._sliderRef = component}
-          data={photos}
+          data={this.state.pictures}
           firstItem={1}
           renderItem={this._renderItemWithParallax.bind(this)}
           sliderWidth={this._getSliderWidth()}
@@ -93,7 +69,7 @@ class SliderPostPhotos extends Component {
           onSnapToItem={(index) => this.setState({ sliderActiveSlide: index })}
         />
         <Pagination
-          dotsLength={photos.length}
+          dotsLength={this.state.pictures.length}
           activeDotIndex={sliderActiveSlide}
           containerStyle={styles.paginationContainer}
           dotColor={this.props.settings.darkTheme ? 'white' : 'black'}

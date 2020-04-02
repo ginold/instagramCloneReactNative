@@ -48,14 +48,6 @@ export default class SliderEntry extends Component {
             {this.image}
             <View style={[styles.radiusMask]} />
           </View>
-          <Layout style={getTextContainerStyle(screen)}>
-            {uppercaseTitle}
-            <Text
-              style={styles.subtitle}
-              numberOfLines={2}>
-              {subtitle}
-            </Text>
-          </Layout>
         </Layout>
       </TouchableOpacity>
     );

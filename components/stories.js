@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import { SafeAreaView, StyleSheet, Image } from 'react-native';
 import { Button, Divider, Layout, ListItem, List, Avatar } from '@ui-kitten/components';
+import Story from './story'
+
 
 export default class Stories extends Component {
   state = { text: 'yeah bitch!', stories: [1, 2, 3, 1, 2, 3, 1, 2, 3] }
@@ -10,12 +12,8 @@ export default class Stories extends Component {
     description: 'Context API udostępnia funkcje React.createContext, która tworzy obiekt z dwoma komponentami: obiekt.Provider oraz obiekt.Consumer. Przykładem niech będzie przypadek, gdy musimy dodać internacjonalizacje do'
   });
   renderItem = ({ item, index }) => (
-    <ListItem  >
-      <Avatar
-        key={`story-${index}`}
-        style={styles.story}
-        source={require('../img/2.jpg')}
-      />
+    <ListItem key={`story-${index}`} >
+      <Story />
     </ListItem>
   );
   render() {

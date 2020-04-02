@@ -1,48 +1,48 @@
 import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
-import { Input, Icon, Layout, Text, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
+import { Input, Icon, Layout, Text, TopNavigation, TopNavigationAction, Button } from '@ui-kitten/components';
 import { Fab } from '../components/fab-details'
 import { SafeAreaView, useSafeArea, SafeAreaProvider } from 'react-native-safe-area-context';
 import SliderPostPhotos from '../components/slider_post_photos'
-import CardActions from '../components/post_actions';
 import { Comment } from '../components/comment'
+import { TopBackNavigation } from '../components/top_back_navigation'
+import PostService from '../api/posts_api'
+import { connect } from 'react-redux'
+import PostActions from '../components/post_actions'
 
-export const DetailsScreen = ({ navigation }) => {
-    const [post, setPost] = React.useState({
-        comments: [], author: 'a', date: new Date()
-    })
+const DetailsScreen = ({ navigation, route, user }) => {
+    const [post, setPost] = React.useState(null)
     const [commentText, setCommentText] = React.useState('')
-    const comment = {
-        author: 'adam', content: ' tis set to true, the app will draw under the status bar. This is useful when using a semi transparent status bar color. ', date: new Date()
-    }
+    React.useEffect(() => {
+        setPost(route.params.post)
+    }, [route.params])
 
-    const BackIcon = (style) => {
-        return <Icon {...style} name='arrow-back' />
+    const addComment = () => {
+        const comment = {
+            date: Date.now(),
+            text: commentText
+        }
+        const comments = [comment, ...post.comments]
+        post.comments = comments
+        setPost(post)
+        setCommentText('')
+        PostService.addComment(comments, post.id)
     }
-    const onBackPress = () => {
-        navigation.goBack();
-    };
-    const BackAction = (props) => {
-        return <TopNavigationAction {...props} icon={BackIcon} />
-    }
-    const renderLeftControl = () => (
-        <BackAction onPress={onBackPress} />
-    );
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <TopNavigation title='Back to feed' alignment='center' leftControl={renderLeftControl()} />
-            <SliderPostPhotos screen='details' style={styles.carousel} />
+        post ? <SafeAreaView style={{ flex: 1 }}>
+            <TopBackNavigation navigation={navigation} />
             <ScrollView
                 keyboardShouldPersistTaps='handled'
                 contentContainerStyle={styles.detailsLayout}>
+                <SliderPostPhotos screen='details' pictures={post.pictures} style={styles.carousel} />
 
                 <Layout style={styles.container}>
-                    <Text>
-                        As your application grows, as does its complexity. Sharing state between components quickly becomes convoluted if you don’t use an appropriate state management solution.
-                        </Text>
-                    <CardActions style={styles.actions} />
-                    <Layout style={styles.comments}>
+                    <Text style={styles.author}>{post.author.displayName}</Text>
+                    <Text style={styles.description}>{post.description}</Text>
+
+                    <PostActions key={post.id} post={post} style={styles.actions} />
+                    <Layout style={styles.commentsContainer}>
                         <Text category='h5'>Comments</Text>
                         <Layout style={styles.addComent}>
                             <Input
@@ -51,28 +51,44 @@ export const DetailsScreen = ({ navigation }) => {
                                 onChangeText={text => setCommentText(text)}
                             />
                         </Layout>
-                        <Comment comment={comment} />
-                        <Comment comment={comment} />
-                        <Comment comment={comment} />
-                        <Comment comment={comment} />
+                        <Button onPress={addComment}>Add comment</Button>
+                        <Layout style={styles.comments}>
+                            {post.comments.map(comment => <Comment comment={comment} />)}
+                        </Layout>
                     </Layout>
                 </Layout>
             </ScrollView>
-            <Fab />
-        </SafeAreaView >
+        </SafeAreaView > : <Text>ioewpja</Text>
     );
 };
+const mapStateToProps = state => {
+    return {
+        user: state.user
+    }
+}
+export default connect(mapStateToProps)(DetailsScreen)
+
 
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
         width: '100%'
     },
+    author: {
+        fontWeight: 'bold'
+    },
     addComent: {
         width: '100%',
         marginVertical: 10
     },
     comments: {
+        width: '100%',
+        marginTop: 20,
+        alignItems: 'flex-start',
+        flex: 1
+    },
+    commentsContainer: {
         alignItems: 'flex-start',
     },
 })
+

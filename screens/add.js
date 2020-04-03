@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
-import { Input, Icon, Layout, Text, TopNavigation, TopNavigationAction, Button } from '@ui-kitten/components';
-import { SafeAreaView, useSafeArea, SafeAreaProvider } from 'react-native-safe-area-context';
+import { Input, Icon, Layout, Text, Button } from '@ui-kitten/components';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { TopBackNavigation } from '../components/top_back_navigation'
 import { LocationAutocomplete } from '../components/location_autocomplete'
 import PostApiService from '../api/posts_api'
@@ -27,6 +27,21 @@ let postObj = {
 export class AddScreen extends React.Component {
 
   constructor(props) {
+
+    //fetch('https://cors-anywhere.herokuapp.com/https://us-central1-instagramclone-b2da0.cloudfunctions.net/getUsers',
+    fetch('http://localhost:5001/instagramclone-b2da0/us-central1/getUsers',
+
+      {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true,
+          'Access-Control-Allow-Methods': 'POST, GET'
+        }
+      }).then(res => {
+        console.log(res)
+      })
     super(props)
     this.state = { post: postObj }
     this._addPost = this._addPost.bind(this)
@@ -47,7 +62,6 @@ export class AddScreen extends React.Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <TopBackNavigation navigation={this.props.navigation} />
         <ScrollView
           contentContainerStyle={styles.container}
           keyboardShouldPersistTaps='handled'>

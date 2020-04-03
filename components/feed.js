@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
         borderWidth: .2,
     },
     list: {
+        flex: 1
     }
 });
 

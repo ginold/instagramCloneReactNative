@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { HomeScreen } from './screens/home';
+import { FeedScreen } from './screens/feed';
 import DetailsScreen from './screens/details';
 import { ChatScreen } from './screens/chat';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -15,15 +15,23 @@ const Stack = createStackNavigator();
 
 export const AppNavigator = () => (
     <NavigationContainer>
-        <Tab.Navigator tabBar={props => <TabNavigation {...props} />} headerMode='none' initialRouteName="Add">
-            <Tab.Screen name='CreateAccount' component={CreateAccountScreen} />
-            <Tab.Screen name='SignIn' component={SignInScreen} />
-            <Tab.Screen name='Home' component={HomeScreen} />
-            <Tab.Screen name='Details' component={DetailsScreen} />
-            <Tab.Screen name='Chat' component={ChatScreen} />
+        <Tab.Navigator tabBar={props => <TabNavigation {...props} />} headerMode='none' initialRouteName="Main">
+            <Tab.Screen name='Main' component={MainScreen} />
             <Tab.Screen name='Add' component={AddScreen} />
+            <Tab.Screen name='Chat' component={ChatScreen} />
         </Tab.Navigator>
     </NavigationContainer>
 );
+
+const MainScreen = () => {
+    return (
+        <Stack.Navigator headerMode='none' >
+            <Stack.Screen name='Feed' component={FeedScreen} />
+            <Stack.Screen name='Details' component={DetailsScreen} />
+            <Stack.Screen name='CreateAccount' component={CreateAccountScreen} />
+            <Stack.Screen name='SignIn' component={SignInScreen} />
+        </Stack.Navigator>
+    )
+}
 
 

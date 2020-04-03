@@ -1,5 +1,6 @@
 import { auth, db } from './init_firebase'
 import AuthReduxService from '../services/auth_redux_service'
+const axios = require('axios').default;
 
 export default {
   authStateChanged: (callback) => {
@@ -39,7 +40,7 @@ export default {
           .then((res) => {
             console.log(res)
             addAdditionalInfo(user)
-            addUserToCollection(auth.currentUser)
+            addUserAndConversationPropsToCollection(auth.currentUser)
             console.log(auth.currentUser)
             AuthReduxService.setUserData({ ...auth.currentUser, displayName: user.name, photoURL: user.avatar })
             resolve()
@@ -59,27 +60,38 @@ export default {
     } catch (err) {
       console.log(err)
     }
+  },
+  getUsers: async () => {
+    return axios.get('https://us-central1-instagramclone-b2da0.cloudfunctions.net/addMessage')
+    return axios.get('https://us-central1-instagramclone-b2da0.cloudfunctions.net/getUsers')
+      .then(function (response) {
+        // handle success
+        console.log(response);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+    // firebase function in index.js
+    // return fetch('https://us-central1-instagramclone-b2da0.cloudfunctions.net/getUsers',
+    //   {
+    //     method: 'GET',
+    //     headers: {
+    //       'Access-Control-Allow-Origin': '*',
+    //       'Access-Control-Allow-Credentials': true,
+    //       'Access-Control-Allow-Methods': 'POST, GET'
+    //     }
+    //   }).then(res => {
+    //     console.log(res)
+    //   })
   }
-  // getUsers: async () => {
-  //   try {
-  //     return new Promise(async (resolve, reject) => {
-  //       let users = []
-  //       const usersRef = await db.collection("users").get()
-  //       console.log(usersRef)
-  //       usersRef.docs.forEach((userRecord) => {
-  //         console.log(userRecord);
-  //         users.push(userRecord.data())
-  //       });
-  //       resolve(users)
-  //     })
-  //   } catch (err) {
-  //     console.log(err)
-  //   }
-  // }
 }
 
-function addUserToCollection(user) {
-  db.collection("users").add({ uid: user.uid })
+function addUserAndConversationPropsToCollection(user) {
+  db.collection("users").doc(user.uid).set({ conversations: [] })
     .then(function (docRef) {
       console.log("Document written with ID: ", docRef.id);
     })

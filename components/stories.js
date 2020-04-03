@@ -18,7 +18,9 @@ export default class Stories extends Component {
   );
   render() {
     return (
-      <List contentContainerStyle={styles.container} horizontal={true} data={this.data} renderItem={this.renderItem}></List >
+      <Layout>
+        <List contentContainerStyle={styles.container} horizontal={true} data={this.data} renderItem={this.renderItem}></List >
+      </Layout>
     );
   }
 }

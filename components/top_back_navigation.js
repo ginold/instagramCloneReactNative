@@ -3,7 +3,7 @@ import React from 'react';
 import { Input, Icon, Layout, Text, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
 
 
-export const TopBackNavigation = ({ navigation }) => {
+export const TopBackNavigation = ({ navigation, route }) => {
   const onBackPress = () => {
     navigation.goBack();
   };

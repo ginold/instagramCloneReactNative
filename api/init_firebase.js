@@ -5,6 +5,7 @@ require('firebase/auth')
 require('firebase/firebase-storage')
 import { decode, encode } from 'base-64'
 import { Platform } from 'react-native'
+require("firebase/functions");
 
 var firebaseConfig = {
   apiKey: "AIzaSyAjVnLnOUWwdAyT6tebbdVPemKtYDl7btI",
@@ -26,7 +27,7 @@ if (Platform.OS !== 'web') {
 
 
 firebase.initializeApp(firebaseConfig);
-
+export const functions = firebase.functions();
 export const storage = firebase.storage();
 export const db = firebase.firestore();
 export const auth = firebase.auth();

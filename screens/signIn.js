@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  View,
   ScrollView,
   Text,
   Dimensions
 } from 'react-native';
 import Logo from '../components/logo'
 import Auth from '../api/auth_api'
-import { Button, Input, Layout, Icon } from '@ui-kitten/components';
+import { Button, Input, Layout, Icon, Avatar } from '@ui-kitten/components';
+import { LoadingIndicator } from '../components/loading_indicator';
 
 export class SignInScreen extends Component {
 
@@ -16,7 +16,7 @@ export class SignInScreen extends Component {
     super(props)
     this._width = Dimensions.get('window').width;
     this.state = {
-      email: '', password: ''
+      email: '', password: '', error: false, loading: false
     }
     this.scrollViewRef = null
     this.handleChange = this.handleChange.bind(this)
@@ -29,8 +29,12 @@ export class SignInScreen extends Component {
   };
 
   signIn() {
+    this.setState({ error: false, loading: true })
     Auth.signIn(this.state.email, this.state.password).then(() => {
-      this.props.navigation.navigate('Home')
+      this.props.navigation.navigate('Feed')
+    }).catch(err => {
+      this.slide(this._width)
+      this.setState({ error: true })
     })
   }
   navigateCreateAccount() {
@@ -45,8 +49,7 @@ export class SignInScreen extends Component {
   slide(position) {
     this.scrollViewRef.scrollTo({ x: position, y: 0, animated: true })
   }
-  componentDidMount() {
-  }
+
   render() {
     return (
       <ScrollView
@@ -83,8 +86,7 @@ export class SignInScreen extends Component {
         <Layout style={this.getStepStyle()}>
           <Layout style={styles.container}>
             <Layout style={styles.header}>
-
-              <Text style={styles.label}>Welcome {this.state.login}</Text>
+              <Text style={styles.label}>Welcome</Text>
             </Layout>
             <Layout style={styles.content}>
               <Input
@@ -104,11 +106,14 @@ export class SignInScreen extends Component {
                   onPress={() => this.slide(0)}
                   innerStyle={{ color: 'white', fontSize: 26 }}>
                 </Button>
-                <Button onPress={this.signIn}>Log in</Button>
+                <Button onPress={() => { this.signIn() }}>Log in</Button>
               </Layout>
             </Layout>
+            {this.state.error && <Text style={{ textAlign: 'center' }}>Login error</Text>}
+
           </Layout>
         </Layout>
+
       </ScrollView>
     );
   }
@@ -120,8 +125,8 @@ let styles = StyleSheet.create({
   },
   nextBtn: {
     width: '50%',
-
   },
+
   logo: {
     width: '100%',
     alignItems: 'center'

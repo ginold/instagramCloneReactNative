@@ -1,15 +1,12 @@
-import { auth, db } from './init_firebase'
+import { auth, db, functions } from './init_firebase'
 import AuthReduxService from '../services/auth_redux_service'
-const axios = require('axios').default;
 
 export default {
   authStateChanged: (callback) => {
     auth.onAuthStateChanged((user) => {
       if (user) {
         AuthReduxService.setUserData(user)
-        return callback(user)
-      } else {
-        // No user is signed in.
+        if (callback) return callback(user)
       }
     });
   },
@@ -28,6 +25,7 @@ export default {
   },
   signOut: () => {
     auth.signOut().then(() => {
+      AuthReduxService.setUserData({})
       console.log("Sign-out successful.");
     }).catch(function (error) {
       console.log("An error happened when signing out");
@@ -41,7 +39,6 @@ export default {
             console.log(res)
             addAdditionalInfo(user)
             addUserAndConversationPropsToCollection(auth.currentUser)
-            console.log(auth.currentUser)
             AuthReduxService.setUserData({ ...auth.currentUser, displayName: user.name, photoURL: user.avatar })
             resolve()
           })
@@ -61,32 +58,10 @@ export default {
       console.log(err)
     }
   },
-  getUsers: async () => {
-    return axios.get('https://us-central1-instagramclone-b2da0.cloudfunctions.net/addMessage')
-    return axios.get('https://us-central1-instagramclone-b2da0.cloudfunctions.net/getUsers')
-      .then(function (response) {
-        // handle success
-        console.log(response);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
-    // firebase function in index.js
-    // return fetch('https://us-central1-instagramclone-b2da0.cloudfunctions.net/getUsers',
-    //   {
-    //     method: 'GET',
-    //     headers: {
-    //       'Access-Control-Allow-Origin': '*',
-    //       'Access-Control-Allow-Credentials': true,
-    //       'Access-Control-Allow-Methods': 'POST, GET'
-    //     }
-    //   }).then(res => {
-    //     console.log(res)
-    //   })
+  getUsers: () => {
+    return functions.httpsCallable('getUsers')()
+      .then((res) => res.data)
+      .catch(err => console.log(err))
   }
 }
 

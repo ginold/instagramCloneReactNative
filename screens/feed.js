@@ -1,6 +1,5 @@
 import React from 'react';
-import { Layout } from '@ui-kitten/components';
-import Feed from '../components/feed'
+import PostList from '../components/post_list'
 import Header from '../components/header'
 import Stories from '../components/stories'
 import { SafeAreaView, } from 'react-native-safe-area-context';
@@ -10,7 +9,7 @@ export const FeedScreen = () => {
         <SafeAreaView style={{ flex: 1 }} >
             <Header />
             <Stories />
-            <Feed />
+            <PostList />
         </SafeAreaView >
     );
 };

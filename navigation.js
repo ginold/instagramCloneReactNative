@@ -15,7 +15,7 @@ const Stack = createStackNavigator();
 
 export const AppNavigator = () => (
     <NavigationContainer>
-        <Tab.Navigator tabBar={props => <TabNavigation {...props} />} headerMode='none' initialRouteName="Main">
+        <Tab.Navigator tabBar={props => <TabNavigation {...props} />} headerMode='none' >
             <Tab.Screen name='Main' component={MainScreen} />
             <Tab.Screen name='Add' component={AddScreen} />
             <Tab.Screen name='Chat' component={ChatScreen} />
@@ -25,7 +25,7 @@ export const AppNavigator = () => (
 
 const MainScreen = () => {
     return (
-        <Stack.Navigator headerMode='none' >
+        <Stack.Navigator headerMode='none' initialRouteName="Feed">
             <Stack.Screen name='Feed' component={FeedScreen} />
             <Stack.Screen name='Details' component={DetailsScreen} />
             <Stack.Screen name='CreateAccount' component={CreateAccountScreen} />

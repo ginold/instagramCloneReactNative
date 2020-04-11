@@ -5,6 +5,7 @@ import {
   BottomNavigationTab,
   Icon,
 } from '@ui-kitten/components';
+import Auth from '../api/auth_api'
 
 const getIcon = (route) => (style) => {
   let name = ''
@@ -21,24 +22,25 @@ const getIcon = (route) => (style) => {
     default:
       name = 'home-outline'
   }
-  return <Icon style={{ ...style, padding: 0 }} name={name} />
+  return <Icon {...style} name={name} />
 }
+
 export const TabNavigation = ({ navigation, state }) => {
   const onSelect = (index) => {
     navigation.navigate(state.routeNames[index]);
   };
+
   return (
     <BottomNavigation
       selectedIndex={state.index}
       onSelect={onSelect}>
-
       {state.routes.map((route, i) => {
         return <BottomNavigationTab
+          key={`navigation${i}`}
           style={styles.tab}
           icon={getIcon(state.routeNames[i])}
         />
       })}
-
     </BottomNavigation>
   );
 }
@@ -54,67 +56,3 @@ const styles = StyleSheet.create({
     flex: 1, padding: 0
   }
 });
-// return (
-//   <BottomNavigation
-//     onSelect={onSelect}
-//     selectedIndex={topSelectedIndex}
-//     style={{ flexDirection: 'row' }}>
-
-//  { state.routes.map((route, index) => {
-//     const { options } = descriptors[route.key];
-//     const label =
-//       options.tabBarLabel !== undefined
-//         ? options.tabBarLabel
-//         : options.title !== undefined
-//           ? options.title
-//           : route.name;
-
-//     const isFocused = state.index === index;
-
-//     const onPress = () => {
-//       const event = navigation.emit({
-//         type: 'tabPress',
-//         target: route.key,
-//         canPreventDefault: true,
-//       });
-
-//       if (!isFocused && !event.defaultPrevented) {
-//         navigation.navigate(route.name);
-//       }
-//     };
-
-//     const onLongPress = () => {
-//       navigation.emit({
-//         type: 'tabLongPress',
-//         target: route.key,
-//       });
-//     };
-
-//     return (
-//       )
-
-//       </BottomNavigation>
-
-
-//const [topSelectedIndex, setTopSelectedIndex] = React.useState(0);
-
-
-// return <Icon style={{ ...style, padding: 0 }} name={name} />
-
-
-// <BottomNavigationTab
-//   style={styles.tab}
-//   icon={getIcon('home')}
-// />
-// <BottomNavigationTab
-//   style={styles.tab}
-//   icon={getIcon('add')}
-// />
-// <BottomNavigationTab
-//   style={styles.tab}
-//   icon={getIcon('chat')}
-// />
-
-//       );
-// }
-

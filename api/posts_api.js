@@ -34,22 +34,17 @@ export default {
   },
   getPosts: async () => {
 
-    try {
-      let postArr = []
-      let picturesUrl = []
-      let posts = await db.collection('posts').orderBy('createdAt', 'desc').get()
-      posts.docs.forEach(doc => {
-        postArr.push({ ...doc.data(), id: doc.id })
-      })
+    let postArr = []
+    let picturesUrl = []
+    let posts = await db.collection('posts').orderBy('createdAt', 'desc').get()
+    posts.docs.forEach(doc => {
+      postArr.push({ ...doc.data(), id: doc.id })
+    })
 
-      picturesUrl = await getImagesFromPost()
-      postArr.forEach(post => post['pictures'] = picturesUrl)
+    // picturesUrl = await getImagesFromPost()
+    // postArr.forEach(post => post['pictures'] = picturesUrl)
 
-      return postArr
-    } catch (err) {
-      console.error(err)
-    }
-
+    return postArr
     async function getImagesFromPost(postId) {
       let folderRef = storage.ref("post1");
       let promises = []
@@ -76,7 +71,6 @@ export default {
       let postDoc = await db.collection("posts").doc(post.id);
       return postDoc.update({ ['likes.total']: firebase.firestore.FieldValue.increment(1) })
         .then((ex) => {
-          PostsReduxService.addLike(post.id)
           console.log("Document likes successfully updated!");
         })
         .catch(function (error) {

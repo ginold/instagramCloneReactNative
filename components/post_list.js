@@ -1,9 +1,7 @@
 import { Text, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native'
 import React from 'react';
-import {
-    List, Layout,
-} from '@ui-kitten/components';
-import { CardItem } from './cardItem'
+import { List, Layout } from '@ui-kitten/components';
+import { Post } from './post'
 import { connect } from 'react-redux'
 import PostApiService from '../api/posts_api'
 import PostsReduxService from '../services/post_redux_service'
@@ -62,10 +60,10 @@ const styles = StyleSheet.create({
     }
 });
 
-const Feed = (props) => {
-    const [posts, setPosts] = React.useState(props.posts)
+const PostList = (props) => {
+    const [posts, setPosts] = React.useState([])
     const [refreshing, setRefreshing] = React.useState(false)
-    const [update, setUpdate] = React.useState(false)
+
     //  console.log('feed')
     React.useEffect(() => {
         if (props.posts.length === 0) {
@@ -91,7 +89,7 @@ const Feed = (props) => {
     const renderItem = ({ item, index }) => (
         <Layout style={styles.listItem} key={`key-${index}`}>
             {/* causes an error in the console, it's a known bug in ui-kitten */}
-            <CardItem item={item} />
+            <Post item={item} />
         </Layout>
     );
     return (
@@ -110,7 +108,7 @@ const mapStateToProps = state => {
         user: state.user
     }
 }
-export default connect(mapStateToProps)(Feed)
+export default connect(mapStateToProps)(PostList)
 
 
 // const gradient = () => {

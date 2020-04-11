@@ -6,21 +6,18 @@ import moment from "moment";
 export const Comment = (props) => {
   const { author, text, date } = props.comment
   return (
-    <>
-      <Layout style={styles.comment}>
-        <Avatar style={styles.avatar} source={require('../img/2.jpg')} />
-        <Layout style={styles.container}>
-          <Text style={styles.authorContent}>
-            <Text style={styles.author}>{author.displayName}: &nbsp;</Text>
-            <Text style={styles.content}>{text}</Text>
-          </Text>
-          <Layout style={styles.footer}>
-            <Text >{moment(date).fromNow()}</Text>
-          </Layout>
+    <Layout style={styles.comment}>
+      <Avatar style={styles.avatar} source={require('../img/2.jpg')} />
+      <Layout style={styles.container}>
+        <Text style={styles.authorContent}>
+          <Text style={styles.author}>{author.displayName}: &nbsp;</Text>
+          <Text style={styles.content}>{text}</Text>
+        </Text>
+        <Layout style={styles.footer}>
+          <Text >{moment(date).fromNow()}</Text>
         </Layout>
       </Layout>
-      <Divider style={styles.divider} />
-    </>
+    </Layout>
   );
 };
 
@@ -33,17 +30,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-
+    marginBottom: 20
   },
   container: {
     flex: 1, flexWrap: 'wrap',
     flexDirection: 'row',
-  },
-  divider: {
-    borderWidth: .5,
-    width: '100%',
-    borderColor: 'grey',
-    marginVertical: 15
   },
   avatar: {
     marginRight: 20,

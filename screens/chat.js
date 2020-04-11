@@ -1,16 +1,16 @@
 import React from 'react';
-import { StyleSheet, } from 'react-native';
-import { Layout, Text } from '@ui-kitten/components';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Layout, Text, Icon } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GiftedChat } from 'react-native-gifted-chat'
 import { db, auth } from '../api/init_firebase'
 import { connect } from 'react-redux'
 import MessagesApi from '../api/messages_api'
 import Auth from '../api/auth_api'
-import { UsersAutocomplete } from '../components/users_autocomplete';
+import { LastMessages } from '../components/lastMessages';
 import { createStackNavigator } from '@react-navigation/stack';
 import Story from '../components/story'
-
+import { LoadingIndicator } from '../components/loading_indicator'
 
 const Stack = createStackNavigator();
 
@@ -28,9 +28,9 @@ export default ChatScreen
 
 const LastMessagesView = ({ navigation }) => {
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <Text category="h4">Messages</Text>
-            <UsersAutocomplete />
+        <SafeAreaView style={{ flex: 1, paddingVertical: 10 }}>
+            <Text style={{ paddingHorizontal: 20, marginBottom: 10 }} category="h4">Messages</Text>
+            <LastMessages />
         </SafeAreaView >
     )
 }
@@ -41,20 +41,17 @@ class ChatDetailsView extends React.Component {
         this.withUserId = this.props.route.params.withUserId
         this.withUserDisplayName = this.props.route.params.displayName
         this.chatId = this.getChatId(this.withUserId, auth.currentUser.uid)
-        this.user = { displayName: '', uid: '' }
 
-        this.state = { messages: [], initialized: false, isTyping: false, }
+        this.state = { loading: true, displayName: null, uid: null, messages: [], initialized: false, isTyping: false, }
         this.messagesRef = db.collection('messages').doc(this.chatId).collection('messages');
         this.setUserData = this.setUserData.bind(this)
         this.detectTyping = this.detectTyping.bind(this);
         this.renderFooter = this.renderFooter.bind(this)
+        this.goToLastMessages = this.goToLastMessages.bind(this)
         Auth.authStateChanged(this.setUserData)
     }
     setUserData(data) {
-        this.user = {
-            displayName: data.displayName,
-            uid: data.uid
-        }
+        this.setState({ displayName: data.displayName, uid: data.uid })
     }
     detectTyping(text) {
         //  console.log(text)
@@ -87,9 +84,9 @@ class ChatDetailsView extends React.Component {
         this.messagesRef.onSnapshot(querySnapshot => this.parseSnapshot(querySnapshot))
         MessagesApi.getMessages(this.chatId).then(messages => {
             if (messages.length === 0) {
-                MessagesApi.createChat(this.withUserId, this.withUserDisplayName).then(() => this.setState({ initialized: true }))
+                MessagesApi.createChat(this.withUserId, this.withUserDisplayName).then(() => this.setState({ initialized: true, loading: false }))
             } else {
-                this.setState({ messages, initialized: true })
+                this.setState({ messages, initialized: true, loading: false })
             }
         })
     }
@@ -105,24 +102,35 @@ class ChatDetailsView extends React.Component {
         else
             return null
     }
+    goToLastMessages() {
+        this.props.navigation.navigate('LastMessagesView')
+    }
+
     render() {
+        console.log(this.state)
+        const { loading, uid } = this.state
         return (
             <SafeAreaView style={{ flex: 1 }}>
-                <Layout>
+                <Layout style={styles.header}>
+                    <TouchableOpacity style={{ marginRight: 10 }} onPress={this.goToLastMessages} >
+                        <Icon name='arrow-back' height={42} width={42} />
+                    </TouchableOpacity>
                     <Story />
-                    <Text category='h4'>{this.withUserDisplayName}</Text>
+                    <Text style={{ marginLeft: 10 }} category='h4'>{this.withUserDisplayName}</Text>
                 </Layout>
-                <GiftedChat
-                    //   renderFooter={this.renderFooter}
-                    isTyping={this.state.isTyping}
-                    messages={this.state.messages}
-                    onInputTextChanged={this.detectTyping}
-                    onSend={messages => this.onSend(messages)}
-                    user={{
-                        _id: this.user.uid,
-                        name: this.user.displayName
-                    }}
-                />
+                {loading && <LoadingIndicator />}
+                {uid &&
+                    <GiftedChat
+                        //   renderFooter={this.renderFooter}
+                        isTyping={this.state.isTyping}
+                        messages={this.state.messages}
+                        onInputTextChanged={this.detectTyping}
+                        onSend={messages => this.onSend(messages)}
+                        user={{
+                            _id: this.state.uid,
+                            name: this.state.displayName
+                        }}
+                    />}
             </SafeAreaView>
         )
     }
@@ -135,4 +143,12 @@ class ChatDetailsView extends React.Component {
 // }
 
 const styles = StyleSheet.create({
+    header: {
+        backgroundColor: 'gray',
+        paddingVertical: 7,
+        paddingLeft: 10,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center'
+    }
 })

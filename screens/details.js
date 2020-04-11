@@ -9,13 +9,17 @@ import { TopBackNavigation } from '../components/top_back_navigation'
 import PostService from '../api/posts_api'
 import { connect } from 'react-redux'
 import PostActions from '../components/post_actions'
+import Story from '../components/story'
 
-const DetailsScreen = ({ navigation, route, user }) => {
-    const [post, setPost] = React.useState(null)
+const DetailsScreen = ({ navigation, route, user, posts }) => {
+    const [post, setPost] = React.useState(route.params.post)
     const [commentText, setCommentText] = React.useState('')
+
     React.useEffect(() => {
-        setPost(route.params.post)
-    }, [route.params])
+        for (let p of posts) {
+            if (p.id === post.id) setPost(p)
+        }
+    }, [posts])
 
     const addComment = () => {
         const comment = {
@@ -28,7 +32,7 @@ const DetailsScreen = ({ navigation, route, user }) => {
         setCommentText('')
         PostService.addComment(comments, post.id)
     }
-
+    console.log(post.author)
     return (
         post ? <SafeAreaView style={{ flex: 1 }}>
             <TopBackNavigation navigation={navigation} />
@@ -38,10 +42,11 @@ const DetailsScreen = ({ navigation, route, user }) => {
                 <SliderPostPhotos screen='details' pictures={post.pictures} style={styles.carousel} />
 
                 <Layout style={styles.container}>
+                    <Story avatar={post.author.avatar} />
                     <Text style={styles.author}>{post.author.displayName}</Text>
                     <Text style={styles.description}>{post.description}</Text>
 
-                    <PostActions key={post.id} post={post} style={styles.actions} />
+                    <PostActions key={`${post.id}-details`} post={post} style={styles.actions} />
                     <Layout style={styles.commentsContainer}>
                         <Text category='h5'>Comments</Text>
                         <Layout style={styles.addComent}>
@@ -51,19 +56,25 @@ const DetailsScreen = ({ navigation, route, user }) => {
                                 onChangeText={text => setCommentText(text)}
                             />
                         </Layout>
-                        <Button onPress={addComment}>Add comment</Button>
+                        <Button style={styles.addComentBtn} size='small' onPress={addComment}>Add comment</Button>
                         <Layout style={styles.comments}>
-                            {post.comments.map(comment => <Comment comment={comment} />)}
+                            {post.comments.map((comment, i) => {
+                                if ((i) === post.comments.length - 1) {
+                                    return <Comment style={styles.commentBorder} comment={comment} />
+                                }
+                                return <Comment comment={comment} />
+                            })}
                         </Layout>
                     </Layout>
                 </Layout>
             </ScrollView>
-        </SafeAreaView > : <Text>ioewpja</Text>
+        </SafeAreaView > : <Text>No post</Text>
     );
 };
 const mapStateToProps = state => {
     return {
-        user: state.user
+        user: state.user,
+        posts: state.posts.allPosts
     }
 }
 export default connect(mapStateToProps)(DetailsScreen)
@@ -74,6 +85,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         width: '100%'
     },
+    addComentBtn: {
+        alignSelf: 'flex-end'
+    },
+    commentBorder: {
+        backgroundColor: 'yellow',
+        borderWidth: 2,
+        fontSize: 30
+    },
     author: {
         fontWeight: 'bold'
     },
@@ -83,7 +102,8 @@ const styles = StyleSheet.create({
     },
     comments: {
         width: '100%',
-        marginTop: 20,
+        marginTop: 10,
+        marginBottom: 20,
         alignItems: 'flex-start',
         flex: 1
     },

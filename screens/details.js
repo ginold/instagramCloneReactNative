@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import { Input, Icon, Layout, Text, TopNavigation, TopNavigationAction, Button } from '@ui-kitten/components';
 import { Fab } from '../components/fab-details'
-import { SafeAreaView, useSafeArea, SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SliderPostPhotos from '../components/slider_post_photos'
 import { Comment } from '../components/comment'
 import { TopBackNavigation } from '../components/top_back_navigation'
@@ -61,9 +61,9 @@ const DetailsScreen = ({ navigation, route, user, posts }) => {
                         <Layout style={styles.comments}>
                             {post.comments.map((comment, i) => {
                                 if ((i) === post.comments.length - 1) {
-                                    return <Comment style={styles.commentBorder} comment={comment} />
+                                    return <Comment key={`${comment.date}-id`} style={styles.commentBorder} comment={comment} />
                                 }
-                                return <Comment comment={comment} />
+                                return <Comment key={`${comment.date}-id`} comment={comment} />
                             })}
                         </Layout>
                     </Layout>

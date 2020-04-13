@@ -27,21 +27,6 @@ let postObj = {
 export class AddScreen extends React.Component {
 
   constructor(props) {
-
-    //fetch('https://cors-anywhere.herokuapp.com/https://us-central1-instagramclone-b2da0.cloudfunctions.net/getUsers',
-    fetch('http://localhost:5001/instagramclone-b2da0/us-central1/getUsers',
-
-      {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true,
-          'Access-Control-Allow-Methods': 'POST, GET'
-        }
-      }).then(res => {
-        console.log(res)
-      })
     super(props)
     this.state = { post: postObj }
     this._addPost = this._addPost.bind(this)

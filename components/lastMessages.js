@@ -1,6 +1,6 @@
 
 import {
-  Autocomplete as KittenAutocomplete, Text, Layout, Icon, Card
+  Autocomplete as KittenAutocomplete, Text, Layout, Icon
 } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import React, { useRef } from 'react';
@@ -9,10 +9,10 @@ import Story from './story'
 import MessagesApi from '../api/messages_api'
 import { LoadingIndicator } from './loading_indicator'
 import Auth from '../api/auth_api'
-import moment from "moment";
 import { Autocomplete } from 'react-native-autocomplete-input'
 import AuthApi from '../api/auth_api'
 import { connect } from 'react-redux'
+import { ConversationListItem } from './conversation_list_item';
 
 const CloseIcon = (style) => (
   <Icon {...style} name='close' />
@@ -137,7 +137,6 @@ const LastMessages = (props) => {
         }}
       />
       {/* <Layout style={styles.autocompleteContainer}>
-
         <Autocomplete
           data={data}
           defaultValue={value}
@@ -151,23 +150,7 @@ const LastMessages = (props) => {
           <ScrollView
             keyboardShouldPersistTaps='handled'>
             {conversations && conversations.length > 0 && conversations.map(conv => {
-              return <TouchableOpacity
-                key={conv.chatId}
-                style={styles.conversation}
-                onPress={() => goToConversation(conv)}>
-
-                <Layout style={{ width: '100%', flexDirection: 'row', alignItems: 'center' }}>
-                  <Story avatar={conv.avatar} style={{ marginLeft: 10, width: '20%' }} />
-                  <Layout style={{ marginLeft: 10, width: '80%' }}>
-                    <Text style={{ fontWeight: 'bold' }}>{conv.displayName}</Text>
-                    <Layout style={styles.messageDetails}>
-                      <Text numberOfLines={1}>{conv.lastMessage.text}</Text>
-                      <Text style={styles.date}>{moment(conv.createdAt).fromNow(true)}</Text>
-                    </Layout>
-                  </Layout>
-                </Layout>
-
-              </TouchableOpacity>
+              return <ConversationListItem goToConversation={goToConversation} conversation={conv} />
             })}
             {(!conversations || conversations.length === 0) && <Text style={{ textAlign: 'center' }}>No conversations yet.</Text>}
           </ScrollView>
@@ -198,18 +181,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: 20,
-  },
-  conversation: {
-    width: '100%',
-    marginBottom: 20
-  },
-  messageDetails: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  date: {
-    color: 'gold'
   },
   autocompletesContainer: {
     paddingTop: 0,

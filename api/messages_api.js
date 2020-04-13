@@ -1,6 +1,5 @@
 import AuthReduxService from '../services/auth_redux_service'
-import { db, storage, auth } from './init_firebase'
-import { user } from 'firebase-functions/lib/providers/auth'
+import { db, auth } from './init_firebase'
 import * as firebase from 'firebase'
 import AuthApi from '../api/auth_api'
 

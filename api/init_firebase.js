@@ -1,8 +1,5 @@
 //import firebase from 'react-native-firebase';
 import * as firebase from 'firebase'
-require('firebase/firestore')
-require('firebase/auth')
-require('firebase/firebase-storage')
 import { decode, encode } from 'base-64'
 import { Platform } from 'react-native'
 require("firebase/functions");

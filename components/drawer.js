@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import SettingsService from '../services/settingsService'
 import { connect } from 'react-redux'
 import Story from './story'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DrawerMenu = (props) => {
   const navigation = useNavigation()
@@ -23,10 +24,10 @@ const DrawerMenu = (props) => {
     <Icon {...style} name='log-out-outline' />
   );
   const MoonIcon = (style) => (
-    <Icon name={darkThemeOff ? 'moon-outline' : 'moon'} />
+    <Icon {...style} name={darkThemeOff ? 'moon-outline' : 'moon'} />
   );
   const CloseIcon = (style) => (
-    <Icon name={'close-circle-outline'} />
+    <Icon {...style} name={'close-circle-outline'} />
   );
 
   const drawerData = [
@@ -73,16 +74,16 @@ const DrawerMenu = (props) => {
   };
 
   return (
-    <Layout style={styles.drawer}>
+    <SafeAreaView style={{
+    }}>
       <Layout style={styles.header}>
         <Story avatar={props.user.photoURL} uid={props.user.uid} />
         <Text style={{ marginLeft: 20, fontWeight: 'bold' }}>{props.user.displayName}</Text>
       </Layout>
       <Drawer
         data={drawerData}
-        onSelect={onRouteSelect}
-      />
-    </Layout>
+        onSelect={onRouteSelect} />
+    </SafeAreaView>
   );
 };
 const mapStateToProps = state => {
@@ -101,13 +102,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     alignItems: 'center'
   },
-  drawerContainer: {
-    height: '100%',
-    width: '100%',
-  },
-  drawer: {
-    height: '100%',
-    width: '100%',
-  }
 })
 

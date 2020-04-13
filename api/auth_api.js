@@ -1,6 +1,5 @@
 import { auth, db, functions } from './init_firebase'
 import AuthReduxService from '../services/auth_redux_service'
-import { getUserById } from '../functions';
 
 export default {
   authStateChanged: (callback) => {

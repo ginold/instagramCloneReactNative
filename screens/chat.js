@@ -14,6 +14,7 @@ import LastMessages from '../components/lastMessages';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Story from '../components/story'
 import { LoadingIndicator } from '../components/loading_indicator'
+import moment from "moment";
 
 const Stack = createStackNavigator();
 
@@ -118,6 +119,14 @@ class ChatDetailsView extends React.Component {
     goToLastMessages() {
         this.props.navigation.navigate('LastMessagesView')
     }
+    renderBubble(a) {
+        console.log(a)
+        const m = a.currentMessage
+        return <Layout>
+            <Text>{m.text}</Text>
+            <Text style={styles.date}>{moment(m.createdAt).format('HH:mm')}</Text>
+        </Layout>
+    }
 
     render() {
         const { loading, uid } = this.state
@@ -142,6 +151,7 @@ class ChatDetailsView extends React.Component {
                             _id: this.state.uid,
                             name: this.state.displayName
                         }}
+                    // renderBubble={this.renderBubble}
                     />}
             </SafeAreaView>
         )

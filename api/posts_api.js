@@ -34,17 +34,22 @@ export default {
   },
   getPosts: async () => {
 
-    let postArr = []
-    let picturesUrl = []
-    let posts = await db.collection('posts').orderBy('createdAt', 'desc').get()
-    posts.docs.forEach(doc => {
-      postArr.push({ ...doc.data(), id: doc.id })
-    })
+    try {
+      let postArr = []
+      let picturesUrl = []
+      let posts = await db.collection('posts').orderBy('createdAt', 'desc').get()
+      posts.docs.forEach(doc => {
+        postArr.push({ ...doc.data(), id: doc.id })
+      })
 
-    // picturesUrl = await getImagesFromPost()
-    // postArr.forEach(post => post['pictures'] = picturesUrl)
+      picturesUrl = await getImagesFromPost()
+      postArr.forEach(post => post['pictures'] = picturesUrl)
 
-    return postArr
+      return postArr
+    } catch (err) {
+      console.error(err)
+    }
+
     async function getImagesFromPost(postId) {
       let folderRef = storage.ref("post1");
       let promises = []
@@ -84,7 +89,8 @@ export default {
   addComment: async (comments, postId) => {
     comments[0].author = {
       displayName: auth.currentUser.displayName,
-      uid: auth.currentUser.uid
+      uid: auth.currentUser.uid,
+      avatar: auth.currentUser.photoURL
     }
     try {
       let post = await db.collection("posts").doc(postId);

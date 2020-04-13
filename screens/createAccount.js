@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Text, Layout, Input, Button, Avatar } from '@ui-kitten/components';
-import { StyleSheet, TouchableOpacity, ScrollView, View, Animated } from 'react-native';
+import { StyleSheet, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import Auth from '../api/auth_api';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingIndicator } from '../components/loading_indicator';
@@ -36,9 +36,9 @@ export const CreateAccountScreen = ({ navigation }) => {
     }
   }
   const getAvatars = () => {
-    let avatars = []
+    let avatarsEls = []
     for (let i = 0; i <= avatars.length - 1; i++) {
-      avatars.push(
+      avatarsEls.push(
         <Animated.View style={[styles.avatar,
         {
           transform: [
@@ -63,7 +63,7 @@ export const CreateAccountScreen = ({ navigation }) => {
         </Animated.View>
       )
     }
-    return avatars
+    return avatarsEls
   }
   const handleChange = (name, value) => {
     setValues({ ...values, [name]: value });
@@ -77,7 +77,6 @@ export const CreateAccountScreen = ({ navigation }) => {
       setError(true)
     })
   }
-  console.log(getAvatars())
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <ScrollView
@@ -149,7 +148,9 @@ let styles = StyleSheet.create({
   loading: {
     position: 'absolute',
     height: '100%',
-    width: '100%'
+    width: '100%',
+    top: 0,
+    left: 0
   },
   label: {
     marginBottom: 10

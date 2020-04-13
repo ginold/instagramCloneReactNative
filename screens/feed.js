@@ -3,8 +3,10 @@ import PostList from '../components/post_list'
 import Header from '../components/header'
 import Stories from '../components/stories'
 import { SafeAreaView, } from 'react-native-safe-area-context';
+import DrawerMenu from '../components/drawer'
 
 export const FeedScreen = () => {
+
     return (
         <SafeAreaView style={{ flex: 1 }} >
             <Header />
@@ -13,7 +15,4 @@ export const FeedScreen = () => {
         </SafeAreaView >
     );
 };
-
-
-
 

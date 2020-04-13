@@ -5,7 +5,6 @@ import {
   BottomNavigationTab,
   Icon,
 } from '@ui-kitten/components';
-import Auth from '../api/auth_api'
 
 const getIcon = (route) => (style) => {
   let name = ''
@@ -25,7 +24,8 @@ const getIcon = (route) => (style) => {
   return <Icon {...style} name={name} />
 }
 
-export const TabNavigation = ({ navigation, state }) => {
+export const TabNavigation = (props) => {
+  const { navigation, state } = props
   const onSelect = (index) => {
     navigation.navigate(state.routeNames[index]);
   };
@@ -45,14 +45,6 @@ export const TabNavigation = ({ navigation, state }) => {
   );
 }
 
+
 const styles = StyleSheet.create({
-  bottomNavigation: {
-    flex: 1,
-    height: 20,
-    marginVertical: 8,
-    borderTopWidth: 1
-  },
-  tab: {
-    flex: 1, padding: 0
-  }
 });

@@ -43,8 +43,9 @@ const DetailsScreen = ({ navigation, route, user, posts }) => {
 
                 <Layout style={styles.container}>
                     <Story avatar={post.author.avatar} />
-                    <Text style={styles.author}>{post.author.displayName}</Text>
-                    <Text style={styles.description}>{post.description}</Text>
+                    <Layout style={{ flexDirection: 'row' }}>
+                        <Text style={styles.description}><Text style={styles.author}>{post.author.displayName}: </Text>{post.description}</Text>
+                    </Layout>
 
                     <PostActions key={`${post.id}-details`} post={post} style={styles.actions} />
                     <Layout style={styles.commentsContainer}>

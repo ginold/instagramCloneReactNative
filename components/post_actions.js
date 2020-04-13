@@ -9,7 +9,6 @@ import PostsReduxService from '../services/post_redux_service'
 class PostActions extends React.Component {
   constructor(props) {
     super(props)
-    console.log(props)
     this.state = { post: this.props.post }
     this.size = 32
     this.addLike = this.addLike.bind(this)

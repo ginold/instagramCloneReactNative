@@ -1,5 +1,6 @@
 import { auth, db, functions } from './init_firebase'
 import AuthReduxService from '../services/auth_redux_service'
+import { getUserById } from '../functions';
 
 export default {
   authStateChanged: (callback) => {
@@ -25,7 +26,7 @@ export default {
   },
   signOut: () => {
     auth.signOut().then(() => {
-      AuthReduxService.setUserData({})
+      AuthReduxService.signOut()
       console.log("Sign-out successful.");
     }).catch(function (error) {
       console.log("An error happened when signing out");
@@ -38,7 +39,7 @@ export default {
           .then((res) => {
             console.log(res)
             addAdditionalInfo(user)
-            addUserAndConversationPropsToCollection(auth.currentUser)
+            addUserPropertiesToCollection(auth.currentUser)
             AuthReduxService.setUserData({ ...auth.currentUser, displayName: user.name, photoURL: user.avatar })
             resolve()
           })
@@ -62,10 +63,15 @@ export default {
     return functions.httpsCallable('getUsers')()
       .then((res) => res.data)
       .catch(err => console.log(err))
+  },
+  getUserById: (id) => {
+    return functions.httpsCallable('getUserById')(id)
+      .then((res) => res.data)
+      .catch(err => console.log(err))
   }
 }
 
-function addUserAndConversationPropsToCollection(user) {
+function addUserPropertiesToCollection(user) {
   db.collection("users").doc(user.uid).set({ conversations: [] })
     .then(function (docRef) {
       console.log("Document written with ID: ", docRef.id);

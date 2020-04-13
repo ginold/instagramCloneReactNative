@@ -1,5 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import {
+    StyleSheet, TouchableOpacity, Animated,
+    Easing,
+} from 'react-native';
 import { Layout, Text, Icon } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GiftedChat } from 'react-native-gifted-chat'
@@ -7,8 +10,8 @@ import { db, auth } from '../api/init_firebase'
 import { connect } from 'react-redux'
 import MessagesApi from '../api/messages_api'
 import Auth from '../api/auth_api'
-import { LastMessages } from '../components/lastMessages';
-import { createStackNavigator } from '@react-navigation/stack';
+import LastMessages from '../components/lastMessages';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Story from '../components/story'
 import { LoadingIndicator } from '../components/loading_indicator'
 
@@ -19,7 +22,7 @@ export class ChatScreen extends React.Component {
         return (
             <Stack.Navigator headerMode='none'>
                 <Stack.Screen name="LastMessagesView" component={LastMessagesView} />
-                <Stack.Screen name="ChatDetailsView" component={ChatDetailsView} />
+                <Stack.Screen options={{ ...TransitionPresets.SlideFromRightIOS }} name="ChatDetailsView" component={ChatDetailsView} />
             </Stack.Navigator>
         )
     }
@@ -41,14 +44,15 @@ class ChatDetailsView extends React.Component {
         this.withUserId = this.props.route.params.withUserId
         this.withUserDisplayName = this.props.route.params.displayName
         this.chatId = this.getChatId(this.withUserId, auth.currentUser.uid)
+        this.withUserAvatar = this.props.route.params.avatar
 
-        this.state = { loading: true, displayName: null, uid: null, messages: [], initialized: false, isTyping: false, }
+        this.state = { createChatOnMessage: false, loading: true, displayName: null, uid: Auth.getUid(), messages: [], initialized: false, isTyping: false, }
         this.messagesRef = db.collection('messages').doc(this.chatId).collection('messages');
         this.setUserData = this.setUserData.bind(this)
         this.detectTyping = this.detectTyping.bind(this);
         this.renderFooter = this.renderFooter.bind(this)
         this.goToLastMessages = this.goToLastMessages.bind(this)
-        Auth.authStateChanged(this.setUserData)
+        Auth.getUserById(this.withUserId)
     }
     setUserData(data) {
         this.setState({ displayName: data.displayName, uid: data.uid })
@@ -83,8 +87,9 @@ class ChatDetailsView extends React.Component {
     componentDidMount() {
         this.messagesRef.onSnapshot(querySnapshot => this.parseSnapshot(querySnapshot))
         MessagesApi.getMessages(this.chatId).then(messages => {
+            console.log(messages)
             if (messages.length === 0) {
-                MessagesApi.createChat(this.withUserId, this.withUserDisplayName).then(() => this.setState({ initialized: true, loading: false }))
+                this.setState({ createChatOnMessage: true, loading: false })
             } else {
                 this.setState({ messages, initialized: true, loading: false })
             }
@@ -94,7 +99,15 @@ class ChatDetailsView extends React.Component {
         return (id1 + id2).split('').sort().join('');
     }
     onSend(messages = []) {
-        MessagesApi.sendMessage(messages[0], this.chatId)
+        if (this.state.createChatOnMessage) {
+            MessagesApi.createChat(this.withUserId, messages[0]).then(() => {
+                this.setState({ initialized: true, loading: false })
+                MessagesApi.sendMessage(messages[0], this.chatId)
+            })
+        } else {
+            MessagesApi.sendMessage(messages[0], this.chatId)
+            MessagesApi.updateLastMessage(messages[0], this.state.uid, this.withUserId, this.chatId)
+        }
     }
     renderFooter() {
         if (this.state.isTyping)
@@ -107,7 +120,6 @@ class ChatDetailsView extends React.Component {
     }
 
     render() {
-        console.log(this.state)
         const { loading, uid } = this.state
         return (
             <SafeAreaView style={{ flex: 1 }}>
@@ -115,7 +127,7 @@ class ChatDetailsView extends React.Component {
                     <TouchableOpacity style={{ marginRight: 10 }} onPress={this.goToLastMessages} >
                         <Icon name='arrow-back' height={42} width={42} />
                     </TouchableOpacity>
-                    <Story />
+                    <Story avatar={this.withUserAvatar} />
                     <Text style={{ marginLeft: 10 }} category='h4'>{this.withUserDisplayName}</Text>
                 </Layout>
                 {loading && <LoadingIndicator />}

@@ -19,3 +19,11 @@ exports.getUsers = functions.https.onCall((data, context) => {
     return users
   }).catch(err => res.status(400).send(err.message))
 });
+
+
+exports.getUserById = functions.https.onCall((id, context) => {
+  console.log(id)
+  return admin.auth().getUser(id).then((userRecord) => {
+    return userRecord
+  }).catch((err => err.messag))
+})

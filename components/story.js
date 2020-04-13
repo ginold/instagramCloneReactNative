@@ -8,7 +8,10 @@ import { avatars } from '../img/avatarRequire'
 export default class Stories extends Component {
 
   render() {
-    const avatar = this.props.avatar ? avatars[this.props.avatar].require : avatars[0].require
+    const avatar = this.props.avatar ?
+      avatars[this.props.avatar - 1].require :
+      avatars[0].require
+
     return (
       <Avatar style={styles.story} source={avatar} />
     );

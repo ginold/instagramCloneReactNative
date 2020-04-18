@@ -2,7 +2,6 @@
 import {
   Autocomplete as KittenAutocomplete, Text, Layout, Icon
 } from '@ui-kitten/components';
-import { useNavigation } from '@react-navigation/native';
 import React, { useRef } from 'react';
 import { StyleSheet, Keyboard, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import Story from './story'
@@ -30,7 +29,7 @@ const hideEvent = Platform.select({
 
 const LastMessages = (props) => {
   const [placement, setPlacement] = React.useState('bottom');
-  const navigation = useNavigation()
+  const navigation = props.navigation
   const autocompleteRef = useRef(null);
   const [loading, setLoading] = React.useState(true);
   const [value, setValue] = React.useState(null);
@@ -115,7 +114,7 @@ const LastMessages = (props) => {
         flex: 1, borderWidth: 1, borderColor: '#dcdcdc', borderRadius: 20,
         flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5
       }}>
-        <Story avatar={photoURL} />
+        <Story navigation={navigation} avatar={photoURL} />
         <Text style={{ marginLeft: 20 }}>{displayName}</Text>
       </Layout>
     )

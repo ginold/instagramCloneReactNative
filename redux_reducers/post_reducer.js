@@ -10,7 +10,7 @@ export const postsReducer = (state = posts, action) => {
     let posts = state.allPosts
     posts.map(post => {
       if (post.id === postId) {
-        post.likes.total += 1
+        return { ...post, likes: { total: post.likes.total += 1 } }
       }
       return post
     })

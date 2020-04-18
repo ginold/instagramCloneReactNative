@@ -30,8 +30,8 @@ export class SignInScreen extends Component {
 
   signIn() {
     this.setState({ error: false, loading: true })
-    Auth.signIn(this.state.email, this.state.password).then(() => {
-      this.props.navigation.navigate('Feed')
+    Auth.signIn(this.state.email.trim(), this.state.password).then(() => {
+      this.props.navigation.navigate('MainApp')
     }).catch(err => {
       this.slide(this._width)
       this.setState({ error: true })
@@ -109,6 +109,7 @@ export class SignInScreen extends Component {
                 <Button onPress={() => { this.signIn() }}>Log in</Button>
               </Layout>
             </Layout>
+            {this.state.loading && <LoadingIndicator />}
             {this.state.error && <Text style={{ textAlign: 'center' }}>Login error</Text>}
 
           </Layout>

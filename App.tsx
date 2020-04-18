@@ -5,8 +5,10 @@ import configureStore from './configureStore'
 import { Provider } from 'react-redux';
 import AppProvider from './ApplicationProvider'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { YellowBox } from "react-native";
 
-console.ignoredYellowBox = ['Warning:', 'Setting']
+
+YellowBox.ignoreWarnings(["Setting a timer"]);
 export const myStore = configureStore()
 
 const App = () => (

@@ -11,15 +11,11 @@ import Story from './story'
 import moment from "moment";
 
 export const Post = (props) => {
-
-  const [post, setPost] = React.useState(props.item)
   const navigation = useNavigation()
   const navigateDetails = () => {
     navigation.navigate('Details', { post });
   };
-  React.useEffect(() => {
-    setPost(props.item)
-  }, [props.item])
+  const post = props.item
 
   return (
     <Layout style={styles.card}>
@@ -30,8 +26,9 @@ export const Post = (props) => {
       </Layout>
       <SliderPostPhotos screen='feed' pictures={post.pictures} />
       <Text>{post.description}</Text>
+      <Text> {post.likes.total}</Text>
       {/* NEEED TO ADD A KEY IN ORDER TO RERENDER!@!!!! */}
-      <PostActions key={post.id} post={post} />
+      <PostActions key={`${post.id}-postactions`} post={post} />
       <Button onPress={navigateDetails}>View more</Button>
     </Layout>
   )

@@ -9,31 +9,31 @@ import PostsReduxService from '../services/post_redux_service'
 class PostActions extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { post: this.props.post }
     this.size = 32
+    this.post = this.props.post
     this.addLike = this.addLike.bind(this)
   }
   addLike() {
-    PostService.addLike(this.props.post)
-    PostsReduxService.addLike(this.state.post.id)
+    PostService.addLike(this.post)
+    PostsReduxService.addLike(this.post.id)
   };
   render() {
-    const { total } = this.state.post.likes
+    const post = this.post
     return (
-      this.state.post ? <Layout style={styles.actions}>
+      <Layout style={styles.actions}>
         <TouchableOpacity >
           <Icon name={'share-outline'} style={{ marginRight: 5 }} width={this.size} height={this.size} fill='gray' />
         </TouchableOpacity>
         <TouchableOpacity >
           <Icon name={'message-circle-outline'} width={this.size} height={this.size} fill='gray' />
         </TouchableOpacity>
-        <Layout style={styles.heartIcon} key={this.state.post.id}>
-          <Text>{`${total} likes`}  </Text>
+        <Layout style={styles.heartIcon} key={`${post.id}-heart`}>
+          <Text key={`${post.id}-likes`}>{`${post.likes.total} likes`}  </Text>
           <TouchableOpacity onPress={this.addLike}>
-            <Icon name={total > 0 ? 'heart' : 'heart-outline'} width={this.size} height={this.size} fill='red' />
+            <Icon name={post.likes.total > 0 ? 'heart' : 'heart-outline'} width={this.size} height={this.size} fill='red' />
           </TouchableOpacity>
         </Layout>
-      </Layout> : <></>
+      </Layout>
     )
   }
 }

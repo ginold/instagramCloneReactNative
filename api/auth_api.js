@@ -3,12 +3,17 @@ import AuthReduxService from '../services/auth_redux_service'
 
 export default {
   authStateChanged: (callback) => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        AuthReduxService.setUserData(user)
-        if (callback) return callback(user)
-      }
-    });
+    return new Promise((resolve, reject) => {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          AuthReduxService.setUserData(user)
+          resolve(user)
+          if (callback) return callback(user)
+        } else {
+          reject()
+        }
+      });
+    })
   },
   signIn: async (email, password) => {
     return new Promise((resolve, reject) => {
@@ -19,6 +24,9 @@ export default {
         })
         .catch(err => reject(err))
     })
+  },
+  getUser: () => {
+    return auth.currentUser
   },
   getUid: () => {
     return (auth.currentUser || {}).uid;

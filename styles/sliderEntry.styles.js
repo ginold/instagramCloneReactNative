@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const IS_IOS = Platform.OS === 'ios';
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
-const slideHeight = viewportHeight * 0.4;
+export const slideHeight = viewportHeight * 0.4;
 const itemHorizontalMargin = 5;
 const entryBorderRadius = 8;
 

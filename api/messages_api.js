@@ -2,6 +2,7 @@ import AuthReduxService from '../services/auth_redux_service'
 import { db, auth } from './init_firebase'
 import * as firebase from 'firebase'
 import AuthApi from '../api/auth_api'
+import NotificationsApi from '../api/notifications_api'
 
 export default {
   sendMessage: async (message, chatId) => {
@@ -9,6 +10,7 @@ export default {
       db.collection('messages').doc(chatId).collection('messages').add(message)
         .then((res) => {
           console.log('message sent')
+          NotificationsApi.sendMessageNotification(message, token)
           resolve(res)
         })
         .catch(err => console.log(err))

@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import { Input, Icon, Layout, Text, TopNavigation, TopNavigationAction, Button } from '@ui-kitten/components';
-import { Fab } from '../components/fab-details'
+import { StyleSheet, ScrollView, KeyboardAvoidingView, Dimensions } from 'react-native';
+import { Input, Layout, Text, Button, Icon } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SliderPostPhotos from '../components/slider_post_photos'
 import { Comment } from '../components/comment'
@@ -10,10 +9,18 @@ import PostService from '../api/posts_api'
 import { connect } from 'react-redux'
 import PostActions from '../components/post_actions'
 import Story from '../components/story'
+import { slideHeight } from '../styles/sliderEntry.styles'
+import moment from "moment";
 
-const DetailsScreen = ({ navigation, route, user, posts }) => {
+const MarkerIcon = (styles) => {
+    return <Icon name="pin-outline" {...styles} />
+}
+
+const DetailsScreen = ({ navigation, route, posts }) => {
     const [post, setPost] = React.useState(route.params.post)
     const [commentText, setCommentText] = React.useState('')
+    const iconSize = 25
+    const hasLocation = post.location && post.location.coordinates
 
     React.useEffect(() => {
         for (let p of posts) {
@@ -32,44 +39,63 @@ const DetailsScreen = ({ navigation, route, user, posts }) => {
         setCommentText('')
         PostService.addComment(comments, post.id)
     }
-    console.log(post.author)
     return (
-        post ? <SafeAreaView style={{ flex: 1 }}>
-            <TopBackNavigation navigation={navigation} />
-            <ScrollView
-                keyboardShouldPersistTaps='handled'
-                contentContainerStyle={styles.detailsLayout}>
-                <SliderPostPhotos screen='details' pictures={post.pictures} style={styles.carousel} />
-
-                <Layout style={styles.container}>
-                    <Story avatar={post.author.avatar} />
-                    <Layout style={{ flexDirection: 'row' }}>
-                        <Text style={styles.description}><Text style={styles.author}>{post.author.displayName}: </Text>{post.description}</Text>
-                    </Layout>
-
-                    <PostActions key={`${post.id}-details`} post={post} style={styles.actions} />
-                    <Layout style={styles.commentsContainer}>
-                        <Text category='h5'>Comments</Text>
-                        <Layout style={styles.addComent}>
-                            <Input
-                                placeholder='Add a comment'
-                                value={commentText}
-                                onChangeText={text => setCommentText(text)}
-                            />
+        <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={(Platform.OS === 'ios') ? "padding" : null}
+                keyboardVerticalOffset={Platform.select({ ios: 0, android: 500 })}>
+                <TopBackNavigation navigation={navigation} from={'Feed'} />
+                <ScrollView
+                    keyboardShouldPersistTaps='handled'>
+                    <Layout style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 20 }}>
+                        <Layout style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Story avatar={post.author.avatar} />
+                            <Text style={styles.author}>{post.author.displayName}</Text>
                         </Layout>
-                        <Button style={styles.addComentBtn} size='small' onPress={addComment}>Add comment</Button>
-                        <Layout style={styles.comments}>
-                            {post.comments.map((comment, i) => {
-                                if ((i) === post.comments.length - 1) {
-                                    return <Comment key={`${comment.date}-id`} style={styles.commentBorder} comment={comment} />
-                                }
-                                return <Comment key={`${comment.date}-id`} comment={comment} />
-                            })}
+                        {hasLocation && <Button icon={MarkerIcon} onPress={() => navigation.navigate('MapView', { location: post.location })}>View on map</Button>}
+                    </Layout>
+                    <SliderPostPhotos screen='details' pictures={post.pictures} style={styles.carousel} />
+
+                    <Layout style={styles.container}>
+                        {hasLocation && <Layout style={styles.textInfoContainer}>
+                            <Icon name='pin-outline' height={iconSize} width={iconSize} fill='grey' />
+                            <Text style={{ marginLeft: 10 }}>Location: <Text style={{ fontWeight: 'bold' }}>{post.location.name}</Text></Text>
+                        </Layout>}
+
+                        <Layout style={styles.textInfoContainer}>
+                            <Icon name='clock-outline' height={iconSize} width={iconSize} fill='grey' />
+                            <Text style={{ marginLeft: 10 }}>Added: <Text style={{ fontWeight: 'bold' }}>{moment(post.createdAt).fromNow()}</Text></Text>
+                        </Layout>
+
+                        <Layout style={{ flexDirection: 'row' }}>
+                            <Text style={styles.description}>{post.description}</Text>
+                        </Layout>
+
+                        <PostActions key={`${post.id}-details`} post={post} style={styles.actions} />
+                        <Layout style={styles.commentsContainer}>
+                            <Text category='h5'>Comments</Text>
+                            <Layout style={styles.addComent}>
+                                <Input
+                                    placeholder='Add a comment'
+                                    value={commentText}
+                                    onChangeText={text => setCommentText(text)}
+                                />
+                            </Layout>
+                            <Button style={styles.addComentBtn} size='small' onPress={addComment}>Add comment</Button>
+                            <Layout style={styles.comments}>
+                                {post.comments.map((comment, i) => {
+                                    if ((i) === post.comments.length - 1) {
+                                        return <Comment key={`${comment.date}-id`} style={styles.commentBorder} comment={comment} />
+                                    }
+                                    return <Comment key={`${comment.date}-id`} comment={comment} />
+                                })}
+                            </Layout>
                         </Layout>
                     </Layout>
-                </Layout>
-            </ScrollView>
-        </SafeAreaView > : <Text>No post</Text>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView >
     );
 };
 const mapStateToProps = state => {
@@ -84,8 +110,12 @@ export default connect(mapStateToProps)(DetailsScreen)
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
-        width: '100%'
+        paddingTop: 10,
+        width: '100%',
+        minHeight: Dimensions.get('window').height - slideHeight - 100,
+        flex: 1
     },
+    textInfoContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
     addComentBtn: {
         alignSelf: 'flex-end'
     },
@@ -95,6 +125,7 @@ const styles = StyleSheet.create({
         fontSize: 30
     },
     author: {
+        marginLeft: 10,
         fontWeight: 'bold'
     },
     addComent: {
@@ -106,7 +137,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 20,
         alignItems: 'flex-start',
-        flex: 1
     },
     commentsContainer: {
         alignItems: 'flex-start',

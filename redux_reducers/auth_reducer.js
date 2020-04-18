@@ -1,3 +1,5 @@
+import { ActionSheetIOS } from "react-native"
+
 const user = {
   conversations: null
 }
@@ -5,15 +7,15 @@ const user = {
 export const authReducer = (state = user, action) => {
   if (action.type === "SET_USER_DATA") {
     console.log('set user data')
-    const userData = { ...state, ...action.payload, conversations: null }
-    console.log(userData)
-    return userData
+    return { ...state, ...action.payload, conversations: null }
   }
-  if (action.type === "SIGN_IN") {
+  if (action.type === "SIGN_IN" || action.type === "UPDATE_USER_DATA") {
     return { ...state, ...action.payload }
   }
   if (action.type === "SIGN_OUT") {
-    return {}
+    setTimeout(() => {
+      return user
+    }, 1000);
   }
   if (action.type === "SET_USER_CONVERSATIONS") {
     console.log(action.payload)

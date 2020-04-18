@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
-import { FeedScreen } from './screens/feed';
+import FeedScreen from './screens/feed';
 import DetailsScreen from './screens/details';
 import { ChatScreen } from './screens/chat';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -10,14 +10,24 @@ import { AddScreen } from './screens/add';
 import { SignInScreen } from './screens/signIn';
 import { CreateAccountScreen } from './screens/createAccount'
 import DrawerMenu from './components/drawer'
-import {
-    Animated,
-    Easing
-} from 'react-native'
+import { Animated, Easing } from 'react-native'
+import { StoryDetail } from './screens/story_detail';
+import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
+import { CameraView } from './components/camera'
+import AuthApi from './api/auth_api'
+import { connect } from 'react-redux'
+import { ImagePickerExpo } from './components/image_picker';
+// import { MapViewer } from './components/map_view'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-
+const StackShared = createSharedElementStackNavigator();
+const isAuth = AuthApi.getUser()
+const forFade = ({ current, closing }) => ({
+    cardStyle: {
+        opacity: current.progress,
+    },
+});
 const { multiply } = Animated;
 function HorizontalSlide({
     current,
@@ -84,17 +94,28 @@ const SlideFromRightAnimation = {
     },
     cardStyleInterpolator: HorizontalSlide,
 };
+const AppNavigator = ({ user }) => {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator headerMode='none'>
+                <Stack.Screen name='MainApp' component={MainAppScreens} />
+                <Stack.Screen name='SignIn' component={SignInScreens} />
+                <Stack.Screen options={{ ...TransitionPresets.ModalTransition }} name='PickImageView' component={ImagePickerExpo} />
+                <Stack.Screen options={{ ...TransitionPresets.ModalTransition }} name='CameraView' component={CameraView} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    )
+}
+const mapStateToProps = state => {
+    return {
+        user: state.user
+    }
+}
+export default connect(mapStateToProps)(AppNavigator);
 
-export const AppNavigator = () => (
-    <NavigationContainer >
-        <Stack.Navigator headerMode='none'>
-            <Stack.Screen name='MainApp' component={MainAppScreens} />
-            <Stack.Screen name='SignIn' component={SignInScreens} />
-        </Stack.Navigator>
-    </NavigationContainer>
-);
+
 const MainAppScreens = () => (
-    <Tab.Navigator tabBar={props => <TabNavigation {...props} />} headerMode='none' >
+    <Tab.Navigator tabBar={props => <TabNavigation {...props} />} headerMode='none' initialRouteName='Main'>
         <Tab.Screen name='Main' component={MainScreen} />
         <Tab.Screen name='Add' component={AddScreen} />
         <Tab.Screen name='Chat' component={ChatScreen} />
@@ -102,11 +123,13 @@ const MainAppScreens = () => (
 )
 const MainScreen = () => {
     return (
-        <Stack.Navigator headerMode='none'>
-            <Stack.Screen name='Feed' options={{ ...TransitionPresets.SlideFromRightIOS }} component={FeedScreen} />
-            <Stack.Screen name='Details' options={{ ...TransitionPresets.SlideFromRightIOS }} component={DetailsScreen} />
-            <Stack.Screen options={{ ...SlideFromRightAnimation }} name='DrawerMenu' component={DrawerMenu} />
-        </Stack.Navigator>
+        <StackShared.Navigator headerMode='none'>
+            <StackShared.Screen name='Feed' component={FeedScreen} />
+            <StackShared.Screen name='Details' options={{ ...TransitionPresets.SlideFromRightIOS }} component={DetailsScreen} />
+            {/* <StackShared.Screen options={{ ...TransitionPresets.ModalTransition }}name='MapView' component={MapViewer} /> */}
+            <StackShared.Screen options={{ ...SlideFromRightAnimation }} name='DrawerMenu' component={DrawerMenu} />
+            <StackShared.Screen name='StoryDetail' options={{ cardStyleInterpolator: forFade }} component={StoryDetail} />
+        </StackShared.Navigator>
     )
 }
 const SignInScreens = () => (

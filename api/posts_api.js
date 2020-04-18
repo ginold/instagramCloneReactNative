@@ -2,89 +2,36 @@ import { db, storage, auth } from './init_firebase'
 import * as firebase from 'firebase'
 import PostsReduxService from '../services/post_redux_service'
 
-const timestamp = firebase.firestore.FieldValue.serverTimestamp()
-
-let posts = [
-  {
-    description: 'The most basic use case is to plop down a TextInput and subscribe to the onChangeText events to read the user input. There are also other events, such as onSubmitEditing and onFocus that can be subscribed to. A minimal example:',
-    createdAt: timestamp,
-    author: 'Adam',
-    likes: {
-      total: 20,
-      likedBy: ['marta', 'adamm']
-    },
-    pictures: [
-      {
-        title: 'beautifl', subtitle: 'jwioej', illustration: 'gs://instagramclone-b2da0.appspot.com/DSC06548.jpg'
-      },
-      { title: 'beautifl', subtitle: 'jwioej', illustration: 'gs://instagramclone-b2da0.appspot.com/DSC06562.jpg' },
-      { title: 'beautifl', subtitle: 'jwioej', illustration: 'gs://instagramclone-b2da0.appspot.com/DSC06572.jpg' }
-
-    ],
-    comments: [
-      { author: 'chuj', text: 'zxiocj ajsdoi owie jwioe', date: new Date(), likes: 2 }
-    ]
-  }
-]
-
 export default {
   getPostById: async (id) => {
     let post = await db.collection("posts").doc(postId);
     return post.then(doc => doc.data())
   },
   getPosts: async () => {
-
-    try {
-      let postArr = []
-      let picturesUrl = []
-      let posts = await db.collection('posts').orderBy('createdAt', 'desc').get()
-      posts.docs.forEach(doc => {
-        postArr.push({ ...doc.data(), id: doc.id })
-      })
-
-      picturesUrl = await getImagesFromPost()
-      postArr.forEach(post => post['pictures'] = picturesUrl)
-
-      return postArr
-    } catch (err) {
-      console.error(err)
-    }
-
-    async function getImagesFromPost(postId) {
-      let folderRef = storage.ref("post1");
-      let promises = []
-
-      let urls = await folderRef.listAll().then(res => {
-        res.items.forEach(image => {
-          promises.push(getImageUrl(image))
+    return new Promise(async (resolve, reject) => {
+      try {
+        let postArr = []
+        const posts = await db.collection('posts').orderBy('createdAt', 'desc').get()
+        posts.docs.forEach(async (doc) => {
+          postArr.push({ ...doc.data(), id: doc.id })
         })
-        return Promise.all(promises).then(urls => urls)
-      })
-      return urls
-    }
-
-    function getImageUrl(imageRef) {
-      return new Promise((res, rej) => {
-        imageRef.getDownloadURL().then(url => {
-          res(url)
-        }).catch(err => console.log(err))
-      })
-    }
+        resolve(postArr)
+      } catch (err) {
+        reject(err)
+      }
+    })
   },
   addLike: async (post) => {
     try {
       let postDoc = await db.collection("posts").doc(post.id);
       return postDoc.update({ ['likes.total']: firebase.firestore.FieldValue.increment(1) })
-        .then((ex) => {
+        .then(() => {
           console.log("Document likes successfully updated!");
         })
-        .catch(function (error) {
-          console.error("Error updating likes  document: ", error);
-        });
+        .catch((error) => console.error("Error updating likes  document: ", error));
     } catch (error) {
       console.log(error)
     }
-
   },
   addComment: async (comments, postId) => {
     comments[0].author = {
@@ -105,41 +52,86 @@ export default {
       console.log(error)
     }
   },
-  addPost: async (post) => {
+  addPost: (post) => {
     try {
       post.createdAt = Date.now()
       post.author = {
         displayName: auth.currentUser.displayName,
-        id: auth.currentUser.uid
+        id: auth.currentUser.uid,
+        avatar: auth.currentUser.photoURL
       }
-      return new Promise((resolve, reject) => {
-        db.collection("posts").add(post)
-          .then(function (docRef) {
-            post.id = docRef.id
-            resolve(post)
-            console.log("Document written with ID: ", docRef.id);
-          })
-          .catch(function (error) {
-            reject(error)
-            console.error("Error adding document: ", error);
-          });
-      })
+      console.log('addign post')
+      db.collection("posts").add(post)
+        .then((docRef) => {
+          post.id = docRef.id
+          uploadPictures(post)
+          console.log('post writte, ', post)
+          console.log("Document written with ID: ", docRef.id);
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+        });
     } catch (err) {
       console.log(err)
     }
-  }
-}
 
+    async function uploadPictures(post) {
+      let promises = []
+      console.log(post)
+      for (let p of post.pictures) {
+        console.log('adding picture ', post.id)
+        // first get our hands on the local file
+        const localFile = await fetch(p.uri);
+        // then create a blob out of it (only works with RN 0.54 and above)
+        const fileBlob = await localFile.blob();
+        const storageRef = storage.ref('pictures/posts');
 
-function updateStatePosts(post) {
-  console.log('update')
-  let posts = PostsReduxService.getPosts()
-  for (let p of posts) {
-    if (p.id === post.id) {
-      p = post
-      break
+        promises.push(new Promise((resolve, reject) => {
+          const uploadTask = storageRef.child(post.id + '/photo' + Math.random() + '.jpg').put(fileBlob)
+          uploadTask.on('state_changed', function (snapshot) {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+          }, function (error) {
+            reject(error)
+            console.log(error)
+          }, function () {
+            // Handle successful uploads on complete
+            uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+              console.log('File available at', downloadURL);
+              resolve(downloadURL)
+            });
+          });
+        }))
+      }
+      Promise.all(promises).then(urls => formatPostAndAddToFeed(post, urls))
+    }
+    async function formatPostAndAddToFeed(post, urls) {
+      console.log('post finished!')
+      post.pictures = urls
+      PostsReduxService.addPost(post)
+      const postDoc = await db.collection("posts").doc(post.id);
+      postDoc.update({ pictures: urls })
     }
   }
-  console.log('set')
-  PostsReduxService.setPosts(posts)
 }
+
+// not useful anymore
+// async function getImagesFromPost(postId) {
+//   let folderRef = storage.ref("pictures/posts/" + postId);
+//   let promises = []
+//   let urls = await folderRef.listAll().then(res => {
+//     res.items.forEach(image => {
+//       promises.push(getImageUrl(image))
+//     })
+//     return Promise.all(promises).then(urls => urls)
+//   })
+//   return urls
+// }
+
+// function getImageUrl(imageRef) {
+//   return new Promise((res, rej) => {
+//     imageRef.getDownloadURL().then(url => {
+//       res(url)
+//     }).catch(err => console.log(err))
+//   })
+// }

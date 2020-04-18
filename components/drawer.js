@@ -16,6 +16,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const DrawerMenu = (props) => {
   const navigation = useNavigation()
   const darkThemeOff = !props.settings.darkTheme
+  const user = props.user
+  console.log(props)
 
   const PersonIcon = (style) => (
     <Icon {...style} name='person-outline' />
@@ -60,6 +62,7 @@ const DrawerMenu = (props) => {
         break
       case 1:
         AuthApi.signOut()
+        navigation.goBack()
         navigation.navigate('SignIn')
         break
       case 2:
@@ -72,13 +75,14 @@ const DrawerMenu = (props) => {
         break
     }
   };
-
+  console.log(user.photoURL)
   return (
     <SafeAreaView style={{
+      height: '100%'
     }}>
       <Layout style={styles.header}>
-        <Story avatar={props.user.photoURL} uid={props.user.uid} />
-        <Text style={{ marginLeft: 20, fontWeight: 'bold' }}>{props.user.displayName}</Text>
+        <Story avatar={user.photoURL} uid={user.uid} />
+        <Text style={{ marginLeft: 20, fontWeight: 'bold' }}>{user.displayName}</Text>
       </Layout>
       <Drawer
         data={drawerData}

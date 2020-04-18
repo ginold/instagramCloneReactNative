@@ -8,6 +8,7 @@
       "android",
       "web"
     ],
+    "owner": "Adam Gina",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,6 +26,11 @@
     "ios": {
       "supportsTablet": true
     },
-    "description": ""
+    "description": "Instagram React Native Clone",
+    "githubUrl": "https://github.com/ginold/instagramCloneReactNative",
+    "notification": {
+      "icon": "./assets/icon.png",
+      "color": "#000000"
+    }
   }
 }

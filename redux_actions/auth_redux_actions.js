@@ -15,6 +15,12 @@ export const signOut = () => {
     type: "SIGN_OUT"
   }
 }
+export const updateUserData = (data) => {
+  return {
+    type: "UPDATE_USER_DATA",
+    payload: data
+  }
+}
 export const getUserConversations = () => {
   return {
     type: "GET_USER_CONVERSATIONS"

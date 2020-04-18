@@ -3,7 +3,8 @@ import React from 'react';
 import { Input, Icon, Layout, Text, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
 
 
-export const TopBackNavigation = ({ navigation, route }) => {
+export const TopBackNavigation = ({ navigation, route, from }) => {
+  console.log(route)
   const onBackPress = () => {
     navigation.goBack();
   };
@@ -18,6 +19,6 @@ export const TopBackNavigation = ({ navigation, route }) => {
     <BackAction onPress={onBackPress} />
   );
   return (
-    <TopNavigation title='Back to feed' alignment='center' leftControl={renderLeftControl()} />
+    <TopNavigation title={`Back ${from ? 'to ' + from : ''}`} leftControl={renderLeftControl()} />
   )
 }

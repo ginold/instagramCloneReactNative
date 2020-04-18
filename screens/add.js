@@ -1,84 +1,127 @@
 import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import { Input, Icon, Layout, Text, Button } from '@ui-kitten/components';
+import { StyleSheet, ScrollView, Image, Dimensions, KeyboardAvoidingView } from 'react-native';
+import { Input, Icon, Layout, Text, Button, ButtonGroup } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TopBackNavigation } from '../components/top_back_navigation'
 import { LocationAutocomplete } from '../components/location_autocomplete'
 import PostApiService from '../api/posts_api'
 import PostsReduxService from '../services/post_redux_service'
-
-const pictures = [
-  {
-    title: 'beautifl', subtitle: 'jwioej', illustration: 'gs://instagramclone-b2da0.appspot.com/DSC06548.jpg'
-  },
-  { title: 'beautifl', subtitle: 'jwioej', illustration: 'gs://instagramclone-b2da0.appspot.com/DSC06562.jpg' },
-  { title: 'beautifl', subtitle: 'jwioej', illustration: 'gs://instagramclone-b2da0.appspot.com/DSC06572.jpg' }
-
-]
-
-let postObj = {
-  author: '', createdAt: null, description: '',
-  location: {}, likes: { total: 0 }, comments: [],
-  pictures: [{
-    title: '', subtitle: '', illustration: '',
-  }]
-}
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+import { ImagePickerExpo } from '../components/image_picker'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export class AddScreen extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = { post: postObj }
+    console.log(props)
+    this.imgSize = Dimensions.get('window').width / 4.3
+    this.paramPicture = props.route.params ? props.route.params.picture : null
+    this.state = {
+      post: {
+        author: '', createdAt: null, description: '',
+        location: {}, likes: { total: 0 }, comments: [],
+        pictures: this.paramPicture ? [this.paramPicture] : []
+      }
+    }
+    this.navigation = this.props.navigation
+    this.defaultPost = this.state.post
     this._addPost = this._addPost.bind(this)
+    this.pickImage = this.pickImage.bind(this)
+    this.onSelectLocation = this.onSelectLocation.bind(this)
+    this.addPictureFromCamera = this.addPictureFromCamera.bind(this)
   }
+  addPictureFromCamera = (picture) => {
 
+  }
+  componentDidMount() {
+    this.getPermissionAsync();
+  }
+  getPermissionAsync = async () => {
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') alert('Sorry, we need camera roll permissions to make this work!');
+    }
+  };
+  handleImageFromPickImageView = (result) => {
+    console.log(result)
+    const post = this.state.post
+    const imgs = [result, ...this.state.post.pictures]
+    this.setState({ post: { ...post, pictures: imgs } });
+  }
+  pickImage = async () => {
+    this.navigation.navigate('PickImageView', { handleImageFromPickImageView: this.handleImageFromPickImageView.bind(this) })
+  };
+  takePhoto = () => {
+    this.navigation.navigate('CameraView', { handleImageFromAddPost: this.handleImageFromPickImageView.bind(this), fromPost: true })
+  }
   _addPost() {
+    this.props.navigation.navigate('Main', { screen: 'Feed', params: { uploading: true } })
+    PostApiService.addPost(this.state.post)
+    this.setState({ post: this.defaultPost })
+  }
+  onSelectLocation(data) {
+    const coordinates = data.result.geometry.location
+    const name = data.result.name
+    const location = { name, coordinates }
     let post = this.state.post
-    PostApiService.addPost(post).then((addedPost) => {
-      this.props.navigation.navigate('Home')
-      this.setState({ post: postObj })
-      PostsReduxService.addPost(addedPost)
-    })
+    post.location = location
+    this.setState({ post })
   }
-  onSelectLocation(location) {
-    console.log(location)
-  }
-
   render() {
+    const { pictures } = this.state.post;
+
     return (
+
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView
-          contentContainerStyle={styles.container}
           keyboardShouldPersistTaps='handled'>
-          <Button>Next</Button>
-          <Layout>
-            <Text category='h1'>Add post</Text>
-            <Button>chooose a photo</Button>
-            {/* <Cameraroll /> */}
-          </Layout>
+          <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS == "ios" ? "padding" : null}>
+            <Layout style={{ padding: 20, flex: 1, height: Dimensions.get('window').height }}>
+              <Text style={{ marginBottom: 20 }} category='h1'>Add post</Text>
 
-          <Layout>
-            <Text>Add a caption</Text>
-            <Input
-              multiline={true}
-              numberOfLines={4}
-              iconResult={<Icon name='home-outline' size={25} />}
-              placeholder={'write something...'}
-              onChangeText={(text) => {
-                let post = this.state.post
-                this.setState({ post: { ...post, description: text } })
-              }}
-              value={this.state.text}>
-            </Input>
-          </Layout>
+              <Layout style={styles.picturesContainer}>
+                <Text category='h6'>Add some images</Text>
+                <Layout style={{ flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                  {pictures.length > 0 && pictures.map((img, i) => {
+                    return <Image key={`image-${i}`} source={{ uri: img.uri }} style={{ marginTop: 5, marginRight: 10, marginBottom: 10, width: this.imgSize, height: this.imgSize }} />
+                  })}
+                  <TouchableOpacity onPress={this.pickImage}>
+                    <Icon name='plus-outline' width={this.imgSize} height={this.imgSize} style={{ borderWidth: 1 }} fill='grey' />
+                  </TouchableOpacity>
+                </Layout>
+                <ButtonGroup style={{ marginTop: 20, width: '100%' }}>
+                  <Button style={{ flex: 1 }} onPress={this.pickImage}>Choose an image</Button>
+                  <Button style={{ flex: 1 }} onPress={this.takePhoto}>Take a photo</Button>
+                </ButtonGroup>
+              </Layout>
 
-          <Layout>
-            <Text>Add a location</Text>
-            <LocationAutocomplete onSelectLocation={this.onSelectLocation} />
-          </Layout>
 
-          <Button onPress={this._addPost}>SHARE</Button>
+              <Layout style={{ marginBottom: 20 }} >
+                <Text category='h6' style={{ marginBottom: 10 }} > Add a caption</Text>
+                <Input
+                  multiline={true}
+                  numberOfLines={4}
+                  iconResult={<Icon name='home-outline' size={25} />}
+                  placeholder={'write something...'}
+                  onChangeText={(text) => {
+                    const post = this.state.post
+                    this.setState({ post: { ...post, description: text } })
+                  }}
+                  value={this.state.post.description}>
+                </Input>
+              </Layout>
 
+              <Layout>
+                <Text category='h6' style={{ marginBottom: 10 }}>Add a location</Text>
+                <LocationAutocomplete onSelectLocation={this.onSelectLocation} />
+              </Layout>
+              <Button onPress={this._addPost}>SHARE</Button>
+            </Layout>
+          </KeyboardAvoidingView>
         </ScrollView>
       </SafeAreaView >
     );
@@ -87,6 +130,13 @@ export class AddScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20
+    height: '100%',
+  },
+  picturesContainer: {
+    marginBottom: 20,
+    borderWidth: 1, borderRadius: 20,
+    padding: 20
   }
 })
+
+

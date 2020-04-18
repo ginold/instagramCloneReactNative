@@ -11,14 +11,21 @@ const Header = (props) => {
   const navigation = useNavigation()
   const user = props.user
 
+  const openCamera = () => {
+    navigation.navigate('CameraView')
+  }
+
   return (
     <Layout style={styles.header}>
+      <TouchableOpacity onPress={openCamera}>
+        <Icon width={size} height={size} name='camera-outline' fill='gray' />
+      </TouchableOpacity>
       <Logo />
       <Layout style={{ flexDirection: 'row' }}>
         {!user && <Button onPress={() => navigation.navigate('SignIn')} size='small'>Sign in</Button>}
-        {user && <Text>{user.displayName}</Text>}
 
-        <TouchableOpacity onPress={() => navigation.navigate('DrawerMenu')}>
+        <TouchableOpacity style={{ alignItems: 'center', flexDirection: 'row' }} onPress={() => navigation.navigate('DrawerMenu')}>
+          <Text style={{ marginRight: 10 }}>{user.displayName}</Text>
           <Icon name={'menu-outline'} width={size} height={size} fill='gray' />
         </TouchableOpacity>
       </Layout>

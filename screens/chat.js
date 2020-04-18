@@ -33,9 +33,11 @@ export default ChatScreen
 const LastMessagesView = ({ navigation }) => {
     return (
         <SafeAreaView style={{ flex: 1, paddingVertical: 10 }}>
-            <Text style={{ paddingHorizontal: 20, marginBottom: 10 }} category="h4">Messages</Text>
-            <LastMessages />
-        </SafeAreaView >
+            <Layout style={{ flex: 1 }}>
+                <Text style={{ paddingHorizontal: 20, marginBottom: 10 }} category="h4">Messages</Text>
+                <LastMessages navigation={navigation} />
+            </Layout>
+        </SafeAreaView>
     )
 }
 
@@ -47,16 +49,12 @@ class ChatDetailsView extends React.Component {
         this.chatId = this.getChatId(this.withUserId, auth.currentUser.uid)
         this.withUserAvatar = this.props.route.params.avatar
 
-        this.state = { createChatOnMessage: false, loading: true, displayName: null, uid: Auth.getUid(), messages: [], initialized: false, isTyping: false, }
+        this.state = { createChatOnMessage: false, loading: true, displayName: null, me: Auth.getUser(), messages: [], initialized: false, isTyping: false, }
         this.messagesRef = db.collection('messages').doc(this.chatId).collection('messages');
-        this.setUserData = this.setUserData.bind(this)
         this.detectTyping = this.detectTyping.bind(this);
         this.renderFooter = this.renderFooter.bind(this)
         this.goToLastMessages = this.goToLastMessages.bind(this)
         Auth.getUserById(this.withUserId)
-    }
-    setUserData(data) {
-        this.setState({ displayName: data.displayName, uid: data.uid })
     }
     detectTyping(text) {
         //  console.log(text)
@@ -100,14 +98,23 @@ class ChatDetailsView extends React.Component {
         return (id1 + id2).split('').sort().join('');
     }
     onSend(messages = []) {
+        let message = {
+            ...messages[0],
+            from: {
+                avatar: this.state.me.photoURL,
+                uid: this.state.me.uid,
+                displayName: this.state.me.displayName
+            },
+            to: { uid: this.withUserId }
+        }
         if (this.state.createChatOnMessage) {
-            MessagesApi.createChat(this.withUserId, messages[0]).then(() => {
+            MessagesApi.createChat(this.withUserId, message).then(() => {
                 this.setState({ initialized: true, loading: false })
-                MessagesApi.sendMessage(messages[0], this.chatId)
+                MessagesApi.sendMessage(message, this.chatId)
             })
         } else {
-            MessagesApi.sendMessage(messages[0], this.chatId)
-            MessagesApi.updateLastMessage(messages[0], this.state.uid, this.withUserId, this.chatId)
+            MessagesApi.sendMessage({ ...message, to: { uid: this.withUserId } }, this.chatId)
+            MessagesApi.updateLastMessage(message, this.state.me.uid, this.withUserId, this.chatId)
         }
     }
     renderFooter() {
@@ -129,7 +136,7 @@ class ChatDetailsView extends React.Component {
     }
 
     render() {
-        const { loading, uid } = this.state
+        const { loading } = this.state
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <Layout style={styles.header}>
@@ -140,7 +147,7 @@ class ChatDetailsView extends React.Component {
                     <Text style={{ marginLeft: 10 }} category='h4'>{this.withUserDisplayName}</Text>
                 </Layout>
                 {loading && <LoadingIndicator />}
-                {uid &&
+                {this.state.me.uid &&
                     <GiftedChat
                         //   renderFooter={this.renderFooter}
                         isTyping={this.state.isTyping}
@@ -148,8 +155,8 @@ class ChatDetailsView extends React.Component {
                         onInputTextChanged={this.detectTyping}
                         onSend={messages => this.onSend(messages)}
                         user={{
-                            _id: this.state.uid,
-                            name: this.state.displayName
+                            _id: this.state.me.uid,
+                            name: this.state.me.displayName
                         }}
                     // renderBubble={this.renderBubble}
                     />}

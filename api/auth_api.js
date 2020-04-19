@@ -44,7 +44,6 @@ export default {
       return new Promise((resolve, rej) => {
         auth.createUserWithEmailAndPassword(user.email, user.password)
           .then((res) => {
-            console.log(res)
             addAdditionalInfo(user)
             addUserPropertiesToCollection(auth.currentUser)
             AuthReduxService.setUserData({ ...auth.currentUser, displayName: user.name, photoURL: user.avatar })

@@ -1,20 +1,21 @@
 
 import React, { Component } from 'react';
 import { StyleSheet, Dimensions, Image, StatusBar } from 'react-native';
-import { Avatar, Layout, Text, Icon, Button } from '@ui-kitten/components';
+import { Avatar, Layout, Text, Icon, Button, ButtonGroup } from '@ui-kitten/components';
 import { avatars } from '../img/avatarRequire'
 import { SharedElement } from 'react-navigation-shared-element';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CameraView } from '../components/camera';
 import { useNavigation } from '@react-navigation/native';
 import StoryApi from '../api/story_api';
+import AuthReduxService from '../services/auth_redux_service'
+import moment from "moment";
+import auth_api from '../api/auth_api';
 import { LoadingIndicator } from '../components/loading_indicator';
+
 const BackIcon = (props) => (
   <Icon {...props} name='arrow-back-outline' />
 );
-const NextIcon = (props) => (
-  <Icon {...props} name='arrow-forward-outline' />
-);
+const headerHeight = 100
 
 export const StoryDetail = (props) => {
   const navigation = useNavigation()
@@ -29,13 +30,14 @@ export const StoryDetail = (props) => {
   }
   const handleImageFromPickImageView = (result) => {
     StoryApi.addPictureToStory(result)
+    AuthReduxService.setAddingToStory(true)
     navigation.goBack()
   }
   const goToCameraView = () => {
     navigation.navigate('CameraView')
   }
   const goToImagePickerView = () => {
-    navigation.navigate('PickImageView', { handleImageFromPickImageView })
+    navigation.navigate('PickImageView', { handleImageFromPickImageView, imageForType: 'story' })
   }
   const onTouch = (e) => {
     if (e.nativeEvent.pageX > width / 2) {
@@ -45,35 +47,37 @@ export const StoryDetail = (props) => {
     }
   }
   return (
-    <SafeAreaView >
+    <SafeAreaView style={{ justifyContent: 'flex-start', flex: 1 }}>
       {story.pictures.length > 0 &&
         <>
           <Layout style={styles.header}>
-            <Button icon={BackIcon} onPress={() => navigation.goBack()}>Go back</Button>
+            <Button size='small' icon={BackIcon} onPress={() => navigation.goBack()} />
+            {story.uid === auth_api.getUid() && <Button size='small' onPress={goToImagePickerView}>Choose from gallery</Button>}
             <Layout style={{ backgroundColor: 'transparent', alignItems: 'center' }}>
-              <SharedElement id={`${story.uid}-avatar`} style={{ flex: 1 }}>
+              <SharedElement id={`${story.uid}-avatar`} >
                 <Avatar source={avatars[story.avatar - 1].require} />
               </SharedElement>
               <SharedElement id={`${story.uid}-text`} >
-                <Text>{story.displayName}</Text>
+                <Text style={{ color: "white" }}>{story.displayName}</Text>
               </SharedElement>
+              <Text style={{ color: 'white' }}>{moment(story.pictures[picIndex].createdAt).fromNow(true)}</Text>
             </Layout>
           </Layout>
-
+          {loading && <LoadingIndicator />}
           <Layout style={styles.imgContainer} onStartShouldSetResponder={onTouch}>
             <SharedElement id={`${story.uid}-image`} >
               <Image
                 onLoadStart={() => setLoading(true)}
                 onLoadEnd={() => setLoading(false)}
                 resizeMode="contain"
-                source={{ uri: story.pictures[picIndex].url, height, width }}
+                source={{ uri: story.pictures[picIndex].url, height: height - StatusBar.currentHeight - headerHeight, width: '100%' }}
               />
             </SharedElement>
           </Layout>
         </>
       }
 
-      {story.pictures.length === 0 &&
+      {(!story.pictures || story.pictures.length === 0) &&
         <Layout style={{ paddingHorizontal: 30, height: '100%', flexDirection: 'row', alignItems: 'center' }}>
           <Layout style={{ alignItems: 'center' }}>
             <SharedElement id={`${story.uid}-avatar`} >
@@ -100,25 +104,17 @@ StoryDetail.sharedElements = (navigation) => {
 }
 const styles = StyleSheet.create({
   header: {
-    position: 'absolute', zIndex: 20,
-    marginTop: StatusBar.currentHeight + 20,
+    paddingVertical: 20,
     paddingHorizontal: 20,
     width: '100%',
+    height: headerHeight,
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent'
+    backgroundColor: 'black'
   },
   imgContainer: {
-    zIndex: 2,
-    top: 0, position: 'absolute',
     backgroundColor: 'black',
-    flex: 1,
-  },
-  image: {
-    backgroundColor: 'black',
-    width: 33,
-    height: 444,
   },
   button: {
     marginTop: 20,

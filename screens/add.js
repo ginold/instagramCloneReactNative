@@ -1,15 +1,14 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Image, Dimensions, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, ScrollView, Image, Dimensions, KeyboardAvoidingView, Platform } from 'react-native';
 import { Input, Icon, Layout, Text, Button, ButtonGroup } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LocationAutocomplete } from '../components/location_autocomplete'
 import PostApiService from '../api/posts_api'
-import PostsReduxService from '../services/post_redux_service'
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
-import { ImagePickerExpo } from '../components/image_picker'
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import AuthReduxService from '../services/auth_redux_service'
 
 export class AddScreen extends React.Component {
 
@@ -51,15 +50,16 @@ export class AddScreen extends React.Component {
     this.setState({ post: { ...post, pictures: imgs } });
   }
   pickImage = async () => {
-    this.navigation.navigate('PickImageView', { handleImageFromPickImageView: this.handleImageFromPickImageView.bind(this) })
+    this.navigation.navigate('PickImageView', { handleImageFromPickImageView: this.handleImageFromPickImageView.bind(this), imageForType:'post' })
   };
   takePhoto = () => {
     this.navigation.navigate('CameraView', { handleImageFromAddPost: this.handleImageFromPickImageView.bind(this), fromPost: true })
   }
   _addPost() {
-    this.props.navigation.navigate('Main', { screen: 'Feed', params: { uploading: true } })
+    this.props.navigation.navigate('Main', { screen: 'Feed' })
     PostApiService.addPost(this.state.post)
     this.setState({ post: this.defaultPost })
+    AuthReduxService.setAddingPost(true)
   }
   onSelectLocation(data) {
     const coordinates = data.result.geometry.location

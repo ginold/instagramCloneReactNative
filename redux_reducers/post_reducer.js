@@ -19,7 +19,6 @@ export const postsReducer = (state = posts, action) => {
 
   if (action.type === "SET_POSTS") {
     console.log('posts set')
-    console.log(action.payload)
     return { ...state, allPosts: action.payload }
   }
 

@@ -10,6 +10,18 @@ export const signIn = (data) => {
     payload: data
   }
 }
+export const setAddingPost = (bool) => {
+  return {
+    type: "SET_USER_ADDING_POST",
+    payload: bool
+  }
+}
+export const setAddingToStory = (bool) => {
+  return {
+    type: "SET_USER_ADDING_TO_STORY",
+    payload: bool
+  }
+}
 export const signOut = () => {
   return {
     type: "SIGN_OUT"

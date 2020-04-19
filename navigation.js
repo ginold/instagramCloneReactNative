@@ -14,15 +14,13 @@ import { Animated, Easing } from 'react-native'
 import { StoryDetail } from './screens/story_detail';
 import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
 import { CameraView } from './components/camera'
-import AuthApi from './api/auth_api'
 import { connect } from 'react-redux'
 import { ImagePickerExpo } from './components/image_picker';
-// import { MapViewer } from './components/map_view'
+import { MapViewer } from './components/map_view'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const StackShared = createSharedElementStackNavigator();
-const isAuth = AuthApi.getUser()
 const forFade = ({ current, closing }) => ({
     cardStyle: {
         opacity: current.progress,
@@ -126,7 +124,7 @@ const MainScreen = () => {
         <StackShared.Navigator headerMode='none'>
             <StackShared.Screen name='Feed' component={FeedScreen} />
             <StackShared.Screen name='Details' options={{ ...TransitionPresets.SlideFromRightIOS }} component={DetailsScreen} />
-            {/* <StackShared.Screen options={{ ...TransitionPresets.ModalTransition }}name='MapView' component={MapViewer} /> */}
+            <StackShared.Screen options={{ ...TransitionPresets.ModalTransition }} name='MapView' component={MapViewer} />
             <StackShared.Screen options={{ ...SlideFromRightAnimation }} name='DrawerMenu' component={DrawerMenu} />
             <StackShared.Screen name='StoryDetail' options={{ cardStyleInterpolator: forFade }} component={StoryDetail} />
         </StackShared.Navigator>
@@ -138,3 +136,11 @@ const SignInScreens = () => (
         <Stack.Screen options={{ ...TransitionPresets.SlideFromRightIOS }} name='CreateAccount' component={CreateAccountScreen} />
     </Stack.Navigator>
 )
+
+// const StoryDetailScreen = () => {
+//     return (
+//         <StackShared.Navigator headerMode='none'>
+//             <StackShared.Screen name='StoryDetailsScreen' options={{ cardStyleInterpolator: forFade }} component={StoryDetail} />
+//         </StackShared.Navigator>
+//     )
+// }

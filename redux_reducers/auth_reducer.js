@@ -1,7 +1,9 @@
 import { ActionSheetIOS } from "react-native"
 
 const user = {
-  conversations: null
+  conversations: null,
+  isAddingToStory: false,
+  isAddingPost: false
 }
 
 export const authReducer = (state = user, action) => {
@@ -14,13 +16,22 @@ export const authReducer = (state = user, action) => {
   }
   if (action.type === "SIGN_OUT") {
     setTimeout(() => {
-      return user
+      return { ...user }
     }, 1000);
   }
   if (action.type === "SET_USER_CONVERSATIONS") {
     console.log(action.payload)
     return { ...state, conversations: action.payload }
   }
+  if (action.type === "SET_USER_ADDING_TO_STORY") {
+    console.log(' reducer ' + action.payload)
+    return { ...state, isAddingToStory: action.payload }
+  }
+  if (action.type === "SET_USER_ADDING_POST") {
+    console.log(' reducer POST ' + action.payload)
+    return { ...state, isAddingPost: action.payload }
+  }
+
   if (action.type === "GET_USER_CONVERSATIONS") {
     return state.conversations
   }

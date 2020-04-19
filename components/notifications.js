@@ -57,6 +57,7 @@ class NotificationServiceClass extends React.Component {
   }
 
   _handleNotification = notification => {
+    // TODO: don't show notificatino if already in chat
     if (notification.origin === 'received') {
       Vibration.vibrate();
     } else if (notification.origin === 'selected') {

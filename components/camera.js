@@ -3,8 +3,9 @@ import { Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Camera } from 'expo-camera';
 import { Icon, Layout, Button, ButtonGroup } from '@ui-kitten/components'
 import { SafeAreaView, } from 'react-native-safe-area-context';
-import StoryApi from '../api/story_api';
 import { TopBackNavigation } from '../components/top_back_navigation'
+import AuthReduxService from '../services/auth_redux_service'
+import StoryApi from '../api/story_api'
 
 export function CameraView({ navigation, route }) {
   const cameraRef = React.useRef(null)
@@ -28,6 +29,7 @@ export function CameraView({ navigation, route }) {
   const addToStory = () => {
     navigation.navigate('Main', { screen: 'Feed' })
     StoryApi.addPictureToStory(picture)
+    AuthReduxService.setAddingToStory(true)
   }
   const addPictureToPost = () => {
     if (route.params && route.params.handleImageFromAddPost) {

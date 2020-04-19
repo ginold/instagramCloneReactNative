@@ -65,7 +65,6 @@ export default {
         .then((docRef) => {
           post.id = docRef.id
           uploadPictures(post)
-          console.log('post writte, ', post)
           console.log("Document written with ID: ", docRef.id);
         })
         .catch((error) => {

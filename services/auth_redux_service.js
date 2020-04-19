@@ -1,6 +1,6 @@
 import {
-  signIn, setUserData, setUserConversations,
-  addUserConversation, signOut, updateUserData
+  signIn, setUserData, setUserConversations, setAddingPost,
+  addUserConversation, signOut, updateUserData, setAddingToStory
 } from '../redux_actions/auth_redux_actions';
 import { myStore } from '../App'
 
@@ -16,6 +16,12 @@ export default class AuthReduxService {
   }
   static updateUserData = (data) => {
     myStore.dispatch(updateUserData(data))
+  }
+  static setAddingToStory = (bool) => {
+    myStore.dispatch(setAddingToStory(bool))
+  }
+  static setAddingPost = (bool) => {
+    myStore.dispatch(setAddingPost(bool))
   }
   static signOut = () => {
     myStore.dispatch(signOut())

@@ -8,12 +8,15 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
+
 export class ImagePickerExpo extends React.Component {
+
   constructor(props) {
     super(props)
+    this.aspect ={ galleryAspect: [12, 10], storyAspect: [9, 15] }
     this.navigation = props.navigation
     this.route = props.route
-    console.log(props)
+    this.imageForType = this.route.params.imageForType
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this)
     this.handleImageFromPickImageView = this.props.route.params.handleImageFromPickImageView
   }
@@ -30,7 +33,6 @@ export class ImagePickerExpo extends React.Component {
   }
   handleBackButtonClick() {
     this.navigation.goBack()
-
   }
 
   getPermissionAsync = async () => {
@@ -44,11 +46,10 @@ export class ImagePickerExpo extends React.Component {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
-        aspect: [12, 10],
-        quality: 1,
+        aspect:  this.imageForType === 'story' ? this.aspect.storyAspect : this.aspect.galleryAspect,
+        quality: .8,
         allowsMultipleSelection: true
       });
-      console.log(result)
       if (!result.cancelled) {
         this.handleImageFromPickImageView(result)
         this.navigation.goBack()

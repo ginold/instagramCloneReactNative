@@ -17,7 +17,6 @@ const DrawerMenu = (props) => {
   const navigation = useNavigation()
   const darkThemeOff = !props.settings.darkTheme
   const user = props.user
-  console.log(props)
 
   const PersonIcon = (style) => (
     <Icon {...style} name='person-outline' />

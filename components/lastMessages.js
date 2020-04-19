@@ -149,7 +149,7 @@ const LastMessages = (props) => {
           <ScrollView
             keyboardShouldPersistTaps='handled'>
             {conversations && conversations.length > 0 && conversations.map(conv => {
-              return <ConversationListItem goToConversation={goToConversation} conversation={conv} />
+              return <ConversationListItem goToConversation={goToConversation} conversation={conv} key={conv.chatId + conv.displayName + '-conversation'} />
             })}
             {(!conversations || conversations.length === 0) && <Text style={{ textAlign: 'center' }}>No conversations yet.</Text>}
           </ScrollView>

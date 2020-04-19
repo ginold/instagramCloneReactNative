@@ -27,3 +27,14 @@ exports.getUserById = functions.https.onCall((id, context) => {
     return userRecord
   }).catch((err => err.messag))
 })
+//To use this solution in your Firebase project, you must be on the Blaze billing plan
+// exports.removeStoriesOlderThanTwoHours = functions.https.onCall((id, context) => {
+
+//   const filePath = `photos/${userUID}/${photoUID}.png`
+//   const bucket = googleCloudStorage.bucket('myBucket-12345.appspot.com')
+//   const file = bucket.file(filePath)
+//   const storiesRef = admin.database().ref('/stories')
+//   const pictures = admin.storage().r
+//   storiesRef.once('')
+
+// });

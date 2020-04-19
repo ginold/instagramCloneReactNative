@@ -10,10 +10,10 @@ import { LoadingIndicator } from '../components/loading_indicator';
 import { NotificationService } from '../components/notifications';
 
 const FeedScreen = (props) => {
-    const [uploading, setUploading] = React.useState(false)
     const [isAuth, setIsAuth] = React.useState(false)
 
     React.useEffect(() => {
+
         if (!props.user.uid) {
             AuthApi.authStateChanged().then(() => {
                 setIsAuth(true)
@@ -24,9 +24,7 @@ const FeedScreen = (props) => {
         } else {
             setIsAuth(true)
         }
-
-        if (props.route.params) setUploading(props.route.params.uploading)
-    }, [props.route.params, props.user])
+    }, [props.user])
 
     return (
         <SafeAreaView style={{ flex: 1 }} >
@@ -34,9 +32,8 @@ const FeedScreen = (props) => {
                 <NotificationService />
                 <Header />
                 <Stories />
-                <PostList uploading={uploading} />
+                <PostList />
             </>}
-
             {!isAuth && <LoadingIndicator />}
         </SafeAreaView >
     );
@@ -47,8 +44,6 @@ const mapStateToProps = state => {
     }
 }
 export default connect(mapStateToProps)(FeedScreen);
-
-
 
 const gradient = () => {
     return (

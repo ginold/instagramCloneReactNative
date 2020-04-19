@@ -7,7 +7,7 @@ import AppProvider from './ApplicationProvider'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { YellowBox } from "react-native";
 
-
+console.ignoredYellowBox = ['Setting a timer:'];
 YellowBox.ignoreWarnings(["Setting a timer"]);
 export const myStore = configureStore()
 

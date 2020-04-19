@@ -6,6 +6,67 @@ import { connect } from 'react-redux'
 import PostApiService from '../api/posts_api'
 import PostsReduxService from '../services/post_redux_service'
 import { LoadingIndicator } from './loading_indicator'
+import AuthReduxService from '../services/auth_redux_service'
+
+const PostList = (props) => {
+    const [posts, setPosts] = React.useState([])
+    const [refreshing, setRefreshing] = React.useState(false)
+    const isAddingPost = props.user.isAddingPost
+    const isAddingToStory = props.user.isAddingToStory
+
+    React.useEffect(() => {
+        if (props.posts.length === 0) {
+            PostApiService.getPosts().then((posts) => {
+                PostsReduxService.setPosts(posts)
+                setPosts(posts)
+            })
+        }
+        if (posts.length !== props.posts.length) {
+            setPosts(props.posts)
+            AuthReduxService.setAddingPost(false)
+        }
+    }, [props.posts, props.user.isAddingToStory, props.user.isAddingPost])
+
+    const onRefresh = () => {
+        setRefreshing(true)
+        setPosts([])
+        PostApiService.getPosts().then(posts => {
+            setPosts(posts)
+            setRefreshing(false)
+        })
+    }
+
+    const renderItem = ({ item, index }) => (
+        <Layout style={styles.listItem} key={`${item.id}-list-item`}>
+            {/* causes an error in the console, it's a known bug in ui-kitten */}
+            <Post key={`${item.id}-post`} item={item} />
+        </Layout>
+    );
+    return (
+        <>
+            {(isAddingPost || isAddingToStory) && <Layout style={{ flex: 0.2, paddingBottom: 30 }}>
+                <Text style={styles.uploading}>{`We're finishing the upload of your
+                  ${props.user.isAddingToStory ? 'story' : 'post'}.`}</Text>
+                <LoadingIndicator />
+            </Layout>}
+
+            {(posts && !!posts.length && !refreshing)
+                ?
+                <List refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                    style={styles.list} data={posts} renderItem={renderItem} />
+                : <LoadingIndicator style={styles.loading} />}
+
+        </>
+    )
+}
+
+const mapStateToProps = state => {
+    return {
+        posts: state.posts.allPosts,
+        user: state.user
+    }
+}
+export default connect(mapStateToProps)(PostList)
 
 const styles = StyleSheet.create({
     loading: {
@@ -28,67 +89,3 @@ const styles = StyleSheet.create({
         color: 'chocolate'
     }
 });
-
-const PostList = (props) => {
-    const [posts, setPosts] = React.useState([])
-    const [refreshing, setRefreshing] = React.useState(false)
-    const [uploading, setUploading] = React.useState(props.uploading)
-
-    // console.log(props)
-    React.useEffect(() => {
-        console.log('new posts')
-        if (props.posts.length === 0) {
-            console.log('0 posts, get posts')
-            PostApiService.getPosts().then((posts) => {
-                PostsReduxService.setPosts(posts)
-                console.log('got posts!')
-                setPosts(posts)
-            })
-        }
-        if (posts.length !== props.posts.length) {
-            console.log('here')
-            setPosts(props.posts)
-            setUploading(false)
-        }
-        if (props.uploading !== uploading) setUploading(props.uploading)
-    }, [props.posts, props.uploading])
-
-    const onRefresh = () => {
-        setRefreshing(true)
-        setPosts([])
-        PostApiService.getPosts().then(posts => {
-            setPosts(posts)
-            setRefreshing(false)
-        })
-    }
-
-    const renderItem = ({ item, index }) => (
-        <Layout style={styles.listItem} key={`${item.id}-list-item`}>
-            {/* causes an error in the console, it's a known bug in ui-kitten */}
-            <Post key={`${item.id}-post`} item={item} />
-        </Layout>
-    );
-    return (
-        <>
-            {uploading && <Layout style={{ flex: 0.2, paddingBottom: 30 }}>
-                <Text style={styles.uploading}>We're finishing the upload of your post.</Text>
-                <LoadingIndicator />
-            </Layout>}
-            {(posts && !!posts.length && !refreshing)
-                ?
-                <List refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-                    style={styles.list} data={posts} renderItem={renderItem} />
-                : <LoadingIndicator style={styles.loading} />}
-
-        </>
-    )
-}
-
-const mapStateToProps = state => {
-    return {
-        posts: state.posts.allPosts,
-        user: state.user
-    }
-}
-export default connect(mapStateToProps)(PostList)
-

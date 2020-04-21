@@ -12,13 +12,13 @@ class SliderPostPhotos extends Component {
   constructor(props) {
     super(props);
     this.setPictures = this.setPictures.bind(this)
+    this.navigation = props.navigation
     this.state = {
       sliderActiveSlide: 1, sliderWidth: 100, itemWidth: 100, pictures: this.setPictures()
     };
   }
   setPictures() {
     let pictures = []
-
     this.props.pictures.forEach(url => {
       pictures.push({
         illustration: url
@@ -26,12 +26,15 @@ class SliderPostPhotos extends Component {
     })
     return pictures
   }
-  _renderItemWithParallax({ item, index, screen }, parallaxProps) {
+  _renderItemWithParallax({ item, index }, parallaxProps) {
     return (
       <SliderEntry
         screen={this.props.screen}
         data={item}
         parallax={true}
+        index={index}
+        navigation={this.navigation}
+        pictures={this.props.pictures}
         parallaxProps={parallaxProps}
       />
     );
@@ -50,7 +53,6 @@ class SliderPostPhotos extends Component {
     }
   }
   render() {
-    const { sliderActiveSlide } = this.state;
     return (
       <Layout style={styles.exampleContainer}>
         <Carousel
@@ -70,7 +72,7 @@ class SliderPostPhotos extends Component {
         />
         <Pagination
           dotsLength={this.state.pictures.length}
-          activeDotIndex={sliderActiveSlide}
+          activeDotIndex={this.state.sliderActiveSlide}
           containerStyle={styles.paginationContainer}
           dotColor={this.props.settings.darkTheme ? 'white' : 'black'}
           dotStyle={styles.paginationDot}

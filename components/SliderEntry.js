@@ -7,11 +7,6 @@ import { Layout, Text } from '@ui-kitten/components';
 
 export default class SliderEntry extends Component {
 
-  static propTypes = {
-    data: PropTypes.object.isRequired,
-    parallaxProps: PropTypes.object
-  };
-
   get image() {
     const { data: { illustration }, parallaxProps } = this.props;
 
@@ -28,6 +23,10 @@ export default class SliderEntry extends Component {
     )
   }
 
+  goToPostPicturesView() {
+    this.props.navigation.navigate('PostPictures', { pictures: this.props.pictures, index: this.props.index })
+  }
+
   render() {
     const { data: { title, subtitle }, screen } = this.props;
 
@@ -41,7 +40,7 @@ export default class SliderEntry extends Component {
       <TouchableOpacity
         activeOpacity={1}
         style={getSliderContainerWidth(screen)}
-        onPress={() => { alert(`You've clicked '${title}'`); }}
+        onPress={() => this.goToPostPicturesView()}
       >
         <Layout style={getShadowStyle(screen)} >
           <View style={[styles.imageContainer]}>

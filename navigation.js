@@ -17,6 +17,7 @@ import { CameraView } from './components/camera'
 import { connect } from 'react-redux'
 import { ImagePickerExpo } from './components/image_picker';
 import { MapViewer } from './components/map_view'
+import { PostPictures } from './screens/post_pictures'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -127,6 +128,7 @@ const MainScreen = () => {
             <StackShared.Screen options={{ ...TransitionPresets.ModalTransition }} name='MapView' component={MapViewer} />
             <StackShared.Screen options={{ ...SlideFromRightAnimation }} name='DrawerMenu' component={DrawerMenu} />
             <StackShared.Screen name='StoryDetail' options={{ cardStyleInterpolator: forFade }} component={StoryDetail} />
+            <StackShared.Screen name='PostPictures' options={{ cardStyleInterpolator: forFade }} component={PostPictures} />
         </StackShared.Navigator>
     )
 }

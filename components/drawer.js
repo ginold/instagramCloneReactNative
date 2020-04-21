@@ -12,6 +12,8 @@ import SettingsService from '../services/settingsService'
 import { connect } from 'react-redux'
 import Story from './story'
 import { SafeAreaView } from 'react-native-safe-area-context';
+import StoriesReduxService from '../services/stoires_redux_service'
+import PostReduxService from '../services/post_redux_service'
 
 const DrawerMenu = (props) => {
   const navigation = useNavigation()
@@ -60,9 +62,13 @@ const DrawerMenu = (props) => {
       case 0:
         break
       case 1:
-        AuthApi.signOut()
         navigation.goBack()
         navigation.navigate('SignIn')
+        setTimeout(() => {
+          AuthApi.signOut()
+          StoriesReduxService.reset()
+          PostReduxService.reset()
+        }, 500);
         break
       case 2:
         _changeTheme()
@@ -79,10 +85,10 @@ const DrawerMenu = (props) => {
     <SafeAreaView style={{
       height: '100%'
     }}>
-      <Layout style={styles.header}>
+      {user.uid && <Layout style={styles.header}>
         <Story avatar={user.photoURL} uid={user.uid} />
         <Text style={{ marginLeft: 20, fontWeight: 'bold' }}>{user.displayName}</Text>
-      </Layout>
+      </Layout>}
       <Drawer
         data={drawerData}
         onSelect={onRouteSelect} />

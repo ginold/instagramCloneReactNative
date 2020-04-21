@@ -10,7 +10,7 @@ export default {
       db.collection('messages').doc(chatId).collection('messages').add(message)
         .then((res) => {
           console.log('message sent')
-          NotificationsApi.sendMessageNotification(message, token)
+          NotificationsApi.sendMessageNotification(message)
           resolve(res)
         })
         .catch(err => console.log(err))
@@ -20,7 +20,6 @@ export default {
     let messagesArr = []
     let messages = await db.collection('messages').doc(chatId).collection('messages').orderBy('createdAt', 'desc').get()
     messages.docs.forEach(doc => {
-      console.log(doc.data().createdAt)
       messagesArr.push({ ...doc.data(), createdAt: Date(doc.data().createdAt.seconds) })
     })
     return messagesArr
@@ -50,7 +49,6 @@ export default {
             cacheConversation.createdAt = Date.now()
             user.ref.update({ conversations: cacheConversations })
             console.log('last message updated')
-            console.log(user.ref.id === myId)
             if (user.ref.id === myId) {
               cacheConversations.sort((a, b) => b.createdAt - a.createdAt)
               AuthReduxService.setUserConversations(cacheConversations)
@@ -80,12 +78,10 @@ export default {
       const me = db.collection('users').doc(auth.currentUser.uid).get()
       me.then(doc => {
         const conversations = doc.data().conversations
-        console.log(conversations)
         if (!conversations || conversations.length === 0) {
           resolve(null)
         } else {
           conversations.sort((a, b) => b.createdAt - a.createdAt)
-          AuthReduxService.setUserConversations(conversations)
           resolve(conversations)
         }
       })
@@ -96,7 +92,6 @@ export default {
 
 function addConversationsToUsers(myId, hisId, chatId, message) {
   console.log('adding conversations to users')
-  console.log(myId, hisId)
   const me = db.collection('users').doc(myId)
   const him = db.collection('users').doc(hisId)
   const lastMessage = message

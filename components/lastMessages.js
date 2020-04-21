@@ -3,15 +3,15 @@ import {
   Autocomplete as KittenAutocomplete, Text, Layout, Icon
 } from '@ui-kitten/components';
 import React, { useRef } from 'react';
-import { StyleSheet, Keyboard, Platform, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Keyboard, Platform, ScrollView } from 'react-native';
 import Story from './story'
 import MessagesApi from '../api/messages_api'
 import { LoadingIndicator } from './loading_indicator'
 import Auth from '../api/auth_api'
 import { Autocomplete } from 'react-native-autocomplete-input'
-import AuthApi from '../api/auth_api'
 import { connect } from 'react-redux'
 import { ConversationListItem } from './conversation_list_item';
+import AuthReduxService from '../services/auth_redux_service'
 
 const CloseIcon = (style) => (
   <Icon {...style} name='close' />
@@ -35,19 +35,29 @@ const LastMessages = (props) => {
   const [value, setValue] = React.useState(null);
   const [data, setData] = React.useState(null);
   const [dataCopy, setDataCopy] = React.useState([]);
-  const [conversations, setConversations] = React.useState(props.conversations)
-  const myId = AuthApi.getUid()
+  const user = props.user
+  const [conversations, setConversations] = React.useState(props.user.conversations)
+  const myId = user.uid
 
   React.useEffect(() => {
-    if (!data) getUsers()
-    if (!conversations) {
-      MessagesApi.getMyConversations().then(conversations => {
-        setConversations(conversations)
+    console.log('conversations')
+    let mounted = true
+    if (mounted) {
+      if (!data) getUsers()
+      if (!conversations && myId) {
+        MessagesApi.getMyConversations().then(conversations => {
+          setConversations(conversations)
+          AuthReduxService.setUserConversations(conversations)
+          setLoading(false)
+        })
+      } else if (!myId) {
+        setConversations(null)
         setLoading(false)
-      })
-    }
-    if (needsUpdate(conversations, props.conversations)) {
-      setConversations(props.conversations)
+      }
+      if (needsUpdate(conversations, props.conversations)) {
+        setConversations(props.conversations)
+      }
+      return () => mounted = false;
     }
     // const keyboardShowListener = Keyboard.addListener(showEvent, () => {
     //   setPlacement('top');
@@ -59,7 +69,7 @@ const LastMessages = (props) => {
     //   keyboardShowListener.remove();
     //   keyboardHideListener.remove();
     // };
-  }, [props.conversations])
+  }, [props.user])
 
   const needsUpdate = (c1, c2) => {
     if (!c1 || !c2) return false
@@ -83,7 +93,6 @@ const LastMessages = (props) => {
   }
 
   const goToConversation = (conversation) => {
-    console.log(conversation)
     const { withUserId, displayName, avatar } = conversation
     setValue('');
     navigation.navigate('ChatDetailsView', { withUserId, displayName, avatar })
@@ -135,13 +144,6 @@ const LastMessages = (props) => {
           goToConversation({ withUserId: user.uid, avatar: user.photoURL, displayName: user.displayName })
         }}
       />
-      {/* <Layout style={styles.autocompleteContainer}>
-        <Autocomplete
-          data={data}
-          defaultValue={value}
-          onChangeText={onChangeText}
-        />
-      </Layout> */}
       <Layout style={{ flex: 1, marginTop: 20 }} >
 
         {loading && <LoadingIndicator />}
@@ -149,7 +151,7 @@ const LastMessages = (props) => {
           <ScrollView
             keyboardShouldPersistTaps='handled'>
             {conversations && conversations.length > 0 && conversations.map(conv => {
-              return <ConversationListItem goToConversation={goToConversation} conversation={conv} key={conv.chatId + conv.displayName + '-conversation'} />
+              return <ConversationListItem goToConversation={goToConversation} conversation={conv} key={conv.chatId + '-conversation'} />
             })}
             {(!conversations || conversations.length === 0) && <Text style={{ textAlign: 'center' }}>No conversations yet.</Text>}
           </ScrollView>
@@ -161,7 +163,7 @@ const LastMessages = (props) => {
 };
 const mapStateToProps = state => {
   return {
-    conversations: state.user.conversations
+    user: state.user
   }
 }
 export default connect(mapStateToProps)(LastMessages)

@@ -57,6 +57,7 @@ export class SignInScreen extends Component {
         pagingEnabled={true}
         showsHorizontalScrollIndicator={false}
         horizontal
+        keyboardShouldPersistTaps='handled'
         scrollEnabled={false}>
 
         <Layout style={this.getStepStyle()}>
@@ -109,7 +110,7 @@ export class SignInScreen extends Component {
                 <Button onPress={() => { this.signIn() }}>Log in</Button>
               </Layout>
             </Layout>
-            {this.state.loading && <LoadingIndicator />}
+            {(this.state.loading && !this.state.error) && <LoadingIndicator />}
             {this.state.error && <Text style={{ textAlign: 'center' }}>Login error</Text>}
 
           </Layout>

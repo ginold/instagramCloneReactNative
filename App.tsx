@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { IconRegistry } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import configureStore from './configureStore'

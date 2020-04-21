@@ -6,28 +6,44 @@ import { avatars } from '../img/avatarRequire'
 import { SharedElement } from 'react-navigation-shared-element';
 import { useNavigation } from '@react-navigation/native';
 import TouchableScale from 'react-native-touchable-scale';
-import AuthApi from '../api/auth_api';
 import { connect } from 'react-redux'
 
 const Story = (props) => {
   const interpolatedRotation = new Animated.Value(0)
+  const interpolatedScale = new Animated.Value(0)
+  const scale = interpolatedScale.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.7, 1]
+  });
   const rotation = interpolatedRotation.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '360deg']
+    outputRange: ['0deg', '860deg']
   });
   const rotationStyle = { transform: [{ rotate: rotation }] }
+  const scaleStyle = { transform: [{ scale }] }
+
   const navigation = props.navigation || useNavigation()
   const story = props.story
   const details = props.storyDetails
   const avatar = props.avatar ?
     avatars[props.avatar - 1].require :
-    avatars[props.story.avatar - 1].require
-  const isUserAddingStory = (story && props.user.isAddingToStory && story.uid === AuthApi.getUid())
+    avatars[story.avatar - 1].require
+  const isUserAddingStory = (story && props.user.isAddingToStory && story.uid === props.user.uid)
 
   React.useEffect(() => {
     if (isUserAddingStory) animateRotation()
+    animateScaleIn()
   }, [props.user])
 
+  const animateScaleIn = () => {
+    Animated.timing(
+      interpolatedScale,
+      {
+        toValue: 1,
+        duration: 500,
+      }
+    ).start()
+  }
   const animateRotation = () => {
     Animated.loop(
       Animated.sequence([
@@ -35,7 +51,8 @@ const Story = (props) => {
           interpolatedRotation,
           {
             toValue: 1,
-            duration: (1000),
+            duration: 1000,
+            useNativeDriver: true
           }
         ),
         Animated.timing(
@@ -43,6 +60,7 @@ const Story = (props) => {
           {
             toValue: 0,
             duration: (1000),
+            useNativeDriver: true
           }
         )
       ])
@@ -58,13 +76,14 @@ const Story = (props) => {
           tension={50}
           friction={7}
           useNativeDriver
+          style={{ marginRight: 10, alignItems: 'center' }}
           onPress={() => navigation.navigate('StoryDetail', { story })}>
 
           <SharedElement id={`${story.uid}-avatar`} >
-            <Animated.View style={isUserAddingStory ? rotationStyle : null}><Avatar style={[styles.story]} source={avatar} /></Animated.View>
+            <Animated.View style={[scaleStyle, isUserAddingStory ? rotationStyle : null]} ><Avatar size='large' source={avatar} /></Animated.View>
           </SharedElement>
-          <SharedElement id={`${story.uid}-text`}>
-            <Text numberOfLines={1} style={{ width: 40 }}>{story.displayName}</Text>
+          <SharedElement id={`${story.uid}-text`}  >
+            <Text numberOfLines={1} >{story.displayName}</Text>
           </SharedElement>
           {story.pictures.length > 0 &&
             <SharedElement id={`${story.uid}-image`} >
@@ -83,9 +102,6 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps)(Story);
 
 const styles = StyleSheet.create({
-  story: {
-    padding: 5,
-  },
   loading: {
     width: '100%',
     height: '100%',

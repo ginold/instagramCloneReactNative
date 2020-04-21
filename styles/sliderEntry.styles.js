@@ -16,7 +16,7 @@ export const getSliderContainerWidth = (screen) => {
   } else if (screen === 'details') {
     return {
       width: viewportWidth,
-      height: slideHeight,
+      height: slideHeight + 150,
       paddingHorizontal: 0
     }
   }

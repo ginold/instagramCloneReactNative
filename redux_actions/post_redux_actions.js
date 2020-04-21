@@ -16,3 +16,8 @@ export const addPost = (post) => {
     payload: post
   }
 }
+export const reset = () => {
+  return {
+    type: "RESET"
+  }
+}

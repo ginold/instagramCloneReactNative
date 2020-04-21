@@ -70,6 +70,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   };
   const createAccount = () => {
     setLoading(true)
+    setError(false)
     Auth.createUser({ ...values, avatar: selectedAvatar }).then(() => {
       navigation.navigate('Feed')
     }).catch(err => {
@@ -79,41 +80,45 @@ export const CreateAccountScreen = ({ navigation }) => {
   }
   return (
     <SafeAreaView style={{ height: '100%' }}>
-      <ScrollView
-        contentContainerStyle={styles.scrollViewStyle}>
-        <Button style={[styles.button, { marginBottom: 20 }]} onPress={() => navigation.navigate('SignIn')}>Back to sign in</Button>
+      <Layout style={{ flex: 1 }}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.scrollViewStyle}>
+          <Button style={[styles.button, { marginBottom: 20 }]} onPress={() => navigation.navigate('SignIn')}>Back to sign in</Button>
 
-        <Text style={{ marginBottom: 20 }} category='h3'>Create an account</Text>
-        <Layout style={styles.header}>
-          <Text style={styles.label}>Choose your avatar</Text>
-          <Layout style={[styles.content, styles.avatars]}>
-            {getAvatars()}
+          <Text style={{ marginBottom: 20 }} category='h3'>Create an account</Text>
+          <Layout style={styles.header}>
+            <Text style={styles.label}>Choose your avatar</Text>
+            <Layout style={[styles.content, styles.avatars]}>
+              {getAvatars()}
+            </Layout>
           </Layout>
-        </Layout>
-        <Input
-          label='Name'
-          placeholder='you visible name'
-          value={values.name}
-          onChangeText={(val) => handleChange('name', val)}
-        />
-        <Input
-          label='Email'
-          placeholder='john.doe@example.com'
-          value={values.email}
-          onChangeText={(val) => handleChange('email', val)}
-        />
-        <Input
-          label='Password'
-          placeholder='***'
-          autoCompleteType={'password'}
-          textContentType={'password'}
-          value={values.password}
-          onChangeText={(val) => handleChange('password', val)}
-        />
-        <Layout style={{ alignItems: 'center' }}>
-          <Button style={[styles.createButton, styles.button]} onPress={createAccount}>Create!</Button>
-        </Layout>
-      </ScrollView>
+          <Input
+            label='Name'
+            placeholder='you visible name'
+            value={values.name}
+            onChangeText={(val) => handleChange('name', val)}
+          />
+          <Input
+            label='Email'
+            placeholder='john.doe@example.com'
+            value={values.email}
+            onChangeText={(val) => handleChange('email', val)}
+          />
+          <Input
+            label='Password'
+            placeholder='***'
+            autoCompleteType={'password'}
+            textContentType={'password'}
+            value={values.password}
+            onChangeText={(val) => handleChange('password', val)}
+          />
+          <Layout style={{ alignItems: 'center' }}>
+            <Button style={[styles.createButton, styles.button]} onPress={createAccount}>Create!</Button>
+          </Layout>
+        </ScrollView>
+      </Layout>
+      {(!loading && error) && <Text>There was an error.</Text>}
       {loading && <LoadingIndicator style={styles.loading} />}
     </SafeAreaView >
   );

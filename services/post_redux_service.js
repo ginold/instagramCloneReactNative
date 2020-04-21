@@ -1,4 +1,4 @@
-import { setPosts, addPost, addLike } from '../redux_actions/post_redux_actions';
+import { setPosts, addPost, addLike, reset } from '../redux_actions/post_redux_actions';
 import { myStore } from '../App'
 
 export default class PostsReduxService {
@@ -13,5 +13,8 @@ export default class PostsReduxService {
   }
   static getPosts = () => {
     return myStore.getState().posts
+  }
+  static reset = () => {
+    return myStore.dispatch(reset())
   }
 }

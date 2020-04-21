@@ -1,9 +1,6 @@
 
 import React from 'react';
-import { StyleSheet, BackHandler, Image } from 'react-native';
-import { Input, Icon, Layout, Text, Button } from '@ui-kitten/components';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LocationAutocomplete } from '../components/location_autocomplete'
+import { BackHandler } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
@@ -13,7 +10,7 @@ export class ImagePickerExpo extends React.Component {
 
   constructor(props) {
     super(props)
-    this.aspect ={ galleryAspect: [12, 10], storyAspect: [9, 15] }
+    this.aspect = { galleryAspect: [12, 10], storyAspect: [9, 15] }
     this.navigation = props.navigation
     this.route = props.route
     this.imageForType = this.route.params.imageForType
@@ -27,14 +24,12 @@ export class ImagePickerExpo extends React.Component {
   componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
-
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
   handleBackButtonClick() {
     this.navigation.goBack()
   }
-
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -46,7 +41,7 @@ export class ImagePickerExpo extends React.Component {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
-        aspect:  this.imageForType === 'story' ? this.aspect.storyAspect : this.aspect.galleryAspect,
+        aspect: this.imageForType === 'story' ? this.aspect.storyAspect : this.aspect.galleryAspect,
         quality: .8,
         allowsMultipleSelection: true
       });

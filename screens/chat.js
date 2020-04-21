@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-    StyleSheet, TouchableOpacity, Animated,
-    Easing,
+    StyleSheet, TouchableOpacity
 } from 'react-native';
 import { Layout, Text, Icon } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GiftedChat } from 'react-native-gifted-chat'
 import { db, auth } from '../api/init_firebase'
-import { connect } from 'react-redux'
 import MessagesApi from '../api/messages_api'
 import Auth from '../api/auth_api'
 import LastMessages from '../components/lastMessages';
@@ -34,7 +32,7 @@ const LastMessagesView = ({ navigation }) => {
     return (
         <SafeAreaView style={{ flex: 1, paddingVertical: 10 }}>
             <Layout style={{ flex: 1 }}>
-                <Text style={{ paddingHorizontal: 20, marginBottom: 10 }} category="h4">Messages</Text>
+                <Text style={{ paddingHorizontal: 20, marginVertical: 10 }} category="h4">Messages</Text>
                 <LastMessages navigation={navigation} />
             </Layout>
         </SafeAreaView>
@@ -44,17 +42,25 @@ const LastMessagesView = ({ navigation }) => {
 class ChatDetailsView extends React.Component {
     constructor(props) {
         super(props)
-        this.withUserId = this.props.route.params.withUserId
-        this.withUserDisplayName = this.props.route.params.displayName
-        this.chatId = this.getChatId(this.withUserId, auth.currentUser.uid)
-        this.withUserAvatar = this.props.route.params.avatar
+        this.withUser = {
+            avatar: this.props.route.params.avatar,
+            uid: this.props.route.params.withUserId,
+            displayName: this.props.route.params.displayName
+        }
+        this.chatId = this.getChatId(this.withUser.uid, auth.currentUser.uid)
 
-        this.state = { createChatOnMessage: false, loading: true, displayName: null, me: Auth.getUser(), messages: [], initialized: false, isTyping: false, }
+        this.state = {
+            createChatOnMessage: false,
+            loading: true, displayName: null,
+            me: Auth.getUser(),
+            messages: [],
+            initialized: false,
+            isTyping: false
+        }
         this.messagesRef = db.collection('messages').doc(this.chatId).collection('messages');
         this.detectTyping = this.detectTyping.bind(this);
         this.renderFooter = this.renderFooter.bind(this)
         this.goToLastMessages = this.goToLastMessages.bind(this)
-        Auth.getUserById(this.withUserId)
     }
     detectTyping(text) {
         //  console.log(text)
@@ -86,7 +92,6 @@ class ChatDetailsView extends React.Component {
     componentDidMount() {
         this.messagesRef.onSnapshot(querySnapshot => this.parseSnapshot(querySnapshot))
         MessagesApi.getMessages(this.chatId).then(messages => {
-            console.log(messages)
             if (messages.length === 0) {
                 this.setState({ createChatOnMessage: true, loading: false })
             } else {
@@ -105,16 +110,16 @@ class ChatDetailsView extends React.Component {
                 uid: this.state.me.uid,
                 displayName: this.state.me.displayName
             },
-            to: { uid: this.withUserId }
+            to: { uid: this.withUser.uid, displayName: this.withUser.displayName }
         }
         if (this.state.createChatOnMessage) {
-            MessagesApi.createChat(this.withUserId, message).then(() => {
+            MessagesApi.createChat(this.withUser.uid, message).then(() => {
                 this.setState({ initialized: true, loading: false })
                 MessagesApi.sendMessage(message, this.chatId)
             })
         } else {
-            MessagesApi.sendMessage({ ...message, to: { uid: this.withUserId } }, this.chatId)
-            MessagesApi.updateLastMessage(message, this.state.me.uid, this.withUserId, this.chatId)
+            MessagesApi.sendMessage(message, this.chatId)
+            MessagesApi.updateLastMessage(message, this.state.me.uid, this.withUser.uid, this.chatId)
         }
     }
     renderFooter() {
@@ -126,8 +131,7 @@ class ChatDetailsView extends React.Component {
     goToLastMessages() {
         this.props.navigation.navigate('LastMessagesView')
     }
-    renderBubble(a) {
-        console.log(a)
+    renderBubble() {
         const m = a.currentMessage
         return <Layout>
             <Text>{m.text}</Text>
@@ -138,18 +142,19 @@ class ChatDetailsView extends React.Component {
     render() {
         const { loading } = this.state
         return (
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1, borderBottomColor: 'lightgray', borderBottomWidth: .5 }}>
                 <Layout style={styles.header}>
                     <TouchableOpacity style={{ marginRight: 10 }} onPress={this.goToLastMessages} >
                         <Icon name='arrow-back' height={42} width={42} />
                     </TouchableOpacity>
-                    <Story avatar={this.withUserAvatar} />
-                    <Text style={{ marginLeft: 10 }} category='h4'>{this.withUserDisplayName}</Text>
+                    <Story avatar={this.withUser.avatar} />
+                    <Text style={{ marginLeft: 10, color: 'white' }} category='h5'>{this.withUser.displayName}</Text>
                 </Layout>
                 {loading && <LoadingIndicator />}
                 {this.state.me.uid &&
                     <GiftedChat
                         //   renderFooter={this.renderFooter}
+                        // renderBubble={this.renderBubble}
                         isTyping={this.state.isTyping}
                         messages={this.state.messages}
                         onInputTextChanged={this.detectTyping}
@@ -158,22 +163,15 @@ class ChatDetailsView extends React.Component {
                             _id: this.state.me.uid,
                             name: this.state.me.displayName
                         }}
-                    // renderBubble={this.renderBubble}
                     />}
             </SafeAreaView>
         )
     }
 }
 
-// const mapStateToProps = state => {
-//     return {
-//         user: state.user
-//     }
-// }
-
 const styles = StyleSheet.create({
     header: {
-        backgroundColor: 'gray',
+        backgroundColor: 'purple',
         paddingVertical: 7,
         paddingLeft: 10,
         flexDirection: 'row',

@@ -7,15 +7,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { connect } from 'react-redux'
 import AuthApi from '../api/auth_api'
 import { LoadingIndicator } from '../components/loading_indicator';
-import { NotificationService } from '../components/notifications';
+import NotificationService from '../components/notifications';
 
 const FeedScreen = (props) => {
     const [isAuth, setIsAuth] = React.useState(false)
 
     React.useEffect(() => {
-
         if (!props.user.uid) {
-            AuthApi.authStateChanged().then(() => {
+            AuthApi.authStateChanged().then((user) => {
                 setIsAuth(true)
             }).catch(() => {
                 setIsAuth(false)

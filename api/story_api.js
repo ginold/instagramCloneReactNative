@@ -15,7 +15,7 @@ export default {
           for (let i = story.pictures.length - 1; i >= 0; i--) {
             const end = moment(story.pictures[i].createdAt); // another date
             const minutesDIff = now.diff(end, 'minutes')
-            if (minutesDIff >= 10) {
+            if (minutesDIff >= 60) {
               const pictureRef = storageRef.child(story.uid + '/' + story.pictures[i].imageName);
               console.log('delete picture')
               pictureRef.delete().then(function () {

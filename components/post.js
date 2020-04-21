@@ -24,7 +24,7 @@ export const Post = (props) => {
         <Text style={styles.author}>{post.author.displayName}</Text>
         <Text style={styles.date}>{moment(post.createdAt).fromNow()}</Text>
       </Layout>
-      <SliderPostPhotos screen='feed' pictures={post.pictures} />
+      <SliderPostPhotos screen='feed' pictures={post.pictures} navigation={navigation} />
       <Text>{post.description}</Text>
       <Text> {post.likes.total}</Text>
       {/* NEEED TO ADD A KEY IN ORDER TO RERENDER!@!!!! */}
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginBottom: 10
+    marginBottom: 10, marginTop: 10
   },
   author: {
     marginLeft: 10,

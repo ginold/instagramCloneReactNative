@@ -2,14 +2,14 @@ import { auth, db, functions } from './init_firebase'
 import AuthReduxService from '../services/auth_redux_service'
 
 export default {
-  authStateChanged: (callback) => {
+  authStateChanged: () => {
     return new Promise((resolve, reject) => {
       auth.onAuthStateChanged((user) => {
         if (user) {
           AuthReduxService.setUserData(user)
           resolve(user)
-          if (callback) return callback(user)
         } else {
+          AuthReduxService.signOut()
           reject()
         }
       });
@@ -18,9 +18,8 @@ export default {
   signIn: async (email, password) => {
     return new Promise((resolve, reject) => {
       auth.signInWithEmailAndPassword(email, password).
-        then((res) => {
-          AuthReduxService.setUserData(res.user)
-          resolve(res.user)
+        then(() => {
+          resolve()
         })
         .catch(err => reject(err))
     })
@@ -33,7 +32,6 @@ export default {
   },
   signOut: () => {
     auth.signOut().then(() => {
-      AuthReduxService.signOut()
       console.log("Sign-out successful.");
     }).catch(function (error) {
       console.log("An error happened when signing out");
@@ -78,7 +76,7 @@ export default {
 }
 
 function addUserPropertiesToCollection(user) {
-  db.collection("users").doc(user.uid).set({ conversations: [] })
+  db.collection("users").doc(user.uid).set({ conversations: [], displayName: user.displayName })
     .then(function (docRef) {
       console.log("Document written with ID: ", docRef.id);
     })

@@ -53,19 +53,23 @@ const DetailsScreen = ({ navigation, route, posts }) => {
                             <Story avatar={post.author.avatar} />
                             <Text style={styles.author}>{post.author.displayName}</Text>
                         </Layout>
-                        {hasLocation && <Button icon={MarkerIcon} onPress={() => navigation.navigate('MapView', { location: post.location })}>View on map</Button>}
                     </Layout>
-                    <SliderPostPhotos screen='details' pictures={post.pictures} style={styles.carousel} />
+                    <SliderPostPhotos screen='details' pictures={post.pictures} navigation={navigation} style={styles.carousel} />
 
                     <Layout style={styles.container}>
                         {hasLocation && <Layout style={styles.textInfoContainer}>
-                            <Icon name='pin-outline' height={iconSize} width={iconSize} fill='grey' />
-                            <Text style={{ marginLeft: 10 }}>Location: <Text style={{ fontWeight: 'bold' }}>{post.location.name}</Text></Text>
+                            <Layout style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                <Icon name='pin-outline' height={iconSize} width={iconSize} fill='grey' />
+                                <Text style={{ marginLeft: 10, marginRight: 10 }}>Location: <Text style={{ fontWeight: 'bold' }}>{post.location.name}</Text></Text>
+                            </Layout>
+                            <Button size='small' icon={MarkerIcon} onPress={() => navigation.navigate('MapView', { location: post.location })}>View on map</Button>
                         </Layout>}
 
                         <Layout style={styles.textInfoContainer}>
-                            <Icon name='clock-outline' height={iconSize} width={iconSize} fill='grey' />
-                            <Text style={{ marginLeft: 10 }}>Added: <Text style={{ fontWeight: 'bold' }}>{moment(post.createdAt).fromNow()}</Text></Text>
+                            <Layout style={{ flexDirection: 'row', alignItems: 'center', }}>
+                                <Icon name='clock-outline' height={iconSize} width={iconSize} fill='grey' />
+                                <Text style={{ marginLeft: 10 }}>Added: <Text style={{ fontWeight: 'bold' }}>{moment(post.createdAt).fromNow()}</Text></Text>
+                            </Layout>
                         </Layout>
 
                         <Layout style={{ flexDirection: 'row' }}>
@@ -115,7 +119,7 @@ const styles = StyleSheet.create({
         minHeight: Dimensions.get('window').height - slideHeight - 100,
         flex: 1
     },
-    textInfoContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+    textInfoContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
     addComentBtn: {
         alignSelf: 'flex-end'
     },

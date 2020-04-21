@@ -1,8 +1,8 @@
-const posts = {
+const postsDefault = {
   allPosts: []
 }
 
-export const postsReducer = (state = posts, action) => {
+export const postsReducer = (state = postsDefault, action) => {
   if (action.type === "ADD_LIKE") {
     console.log('add like')
     const postId = action.payload
@@ -16,15 +16,16 @@ export const postsReducer = (state = posts, action) => {
     })
     return { ...state, allPosts: posts.slice() } // quick fix for props not re-rendering in the feed
   }
-
   if (action.type === "SET_POSTS") {
     console.log('posts set')
     return { ...state, allPosts: action.payload }
   }
-
+  if (action.type === "RESET") {
+    console.log('reset posts')
+    return postsDefault
+  }
   if (action.type === "ADD_POST") {
     const post = action.payload // post object
-    const posts = state.allPosts
     return { ...state, allPosts: [post, ...state.allPosts] }
   }
   return state

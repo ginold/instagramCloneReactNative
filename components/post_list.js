@@ -15,16 +15,20 @@ const PostList = (props) => {
     const isAddingToStory = props.user.isAddingToStory
 
     React.useEffect(() => {
+        let mounted = true
         if (props.posts.length === 0) {
             PostApiService.getPosts().then((posts) => {
-                PostsReduxService.setPosts(posts)
-                setPosts(posts)
+                if (mounted) {
+                    PostsReduxService.setPosts(posts)
+                    setPosts(posts)
+                }
             })
         }
         if (posts.length !== props.posts.length) {
             setPosts(props.posts)
             AuthReduxService.setAddingPost(false)
         }
+        return () => mounted = false;
     }, [props.posts, props.user.isAddingToStory, props.user.isAddingPost])
 
     const onRefresh = () => {
@@ -44,9 +48,8 @@ const PostList = (props) => {
     );
     return (
         <>
-            {(isAddingPost || isAddingToStory) && <Layout style={{ flex: 0.2, paddingBottom: 30 }}>
-                <Text style={styles.uploading}>{`We're finishing the upload of your
-                  ${props.user.isAddingToStory ? 'story' : 'post'}.`}</Text>
+            {(isAddingPost || isAddingToStory) && <Layout style={{ flex: 0.2, paddingBottom: 30, marginTop: 20 }}>
+                <Text style={styles.uploading}>{`We're finishing the upload of your ${props.user.isAddingToStory ? 'story' : 'post'}.`}</Text>
                 <LoadingIndicator />
             </Layout>}
 
@@ -80,9 +83,10 @@ const styles = StyleSheet.create({
         borderWidth: .2,
     },
     list: {
-        flex: 1
+        flex: 1, paddingTop: 20
     },
     uploading: {
+        width: '100%',
         textAlign: 'center',
         marginVertical: 20,
         fontWeight: 'bold',

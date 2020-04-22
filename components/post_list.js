@@ -11,12 +11,14 @@ import AuthReduxService from '../services/auth_redux_service'
 const PostList = (props) => {
     const [posts, setPosts] = React.useState([])
     const [refreshing, setRefreshing] = React.useState(false)
+    const [noPosts, setNoPosts] = React.useState(false)
     const isAddingPost = props.user.isAddingPost
     const isAddingToStory = props.user.isAddingToStory
 
     React.useEffect(() => {
+        console.log('wewew')
         let mounted = true
-        if (props.posts.length === 0) {
+        if (props.posts.length === 0 && !noPosts) {
             PostApiService.getPosts().then((posts) => {
                 if (mounted) {
                     PostsReduxService.setPosts(posts)
@@ -29,14 +31,18 @@ const PostList = (props) => {
             AuthReduxService.setAddingPost(false)
         }
         return () => mounted = false;
-    }, [props.posts, props.user.isAddingToStory, props.user.isAddingPost])
+    }, [props.posts, props.user.isAddingToStory, props.user.isAddingPost, noPosts])
 
     const onRefresh = () => {
         setRefreshing(true)
         setPosts([])
         PostApiService.getPosts().then(posts => {
-            setPosts(posts)
-            setRefreshing(false)
+            if (posts) {
+                setPosts(posts)
+                setRefreshing(false)
+            } else if (!posts || posts.length === 0) {
+                setNoPosts(true)
+            }
         })
     }
 
@@ -52,7 +58,7 @@ const PostList = (props) => {
                 <Text style={styles.uploading}>{`We're finishing the upload of your ${props.user.isAddingToStory ? 'story' : 'post'}.`}</Text>
                 <LoadingIndicator />
             </Layout>}
-
+            {noPosts && <Text category='h3'>No posts yet.</Text>}
             {(posts && !!posts.length && !refreshing)
                 ?
                 <List refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

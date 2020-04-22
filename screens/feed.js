@@ -27,6 +27,10 @@ const FeedScreen = (props) => {
 
     return (
         <SafeAreaView style={{ flex: 1 }} >
+            {/* <LinearGradient
+                colors={['#4c669f', '#3b5998', '#192f6a']}
+                style={{ padding: 15, alignItems: 'center', borderRadius: 5 }}>
+            </LinearGradient > */}
             {isAuth && <>
                 <NotificationService />
                 <Header />

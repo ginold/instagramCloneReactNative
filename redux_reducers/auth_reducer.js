@@ -1,46 +1,36 @@
-
 const userDefault = {
   conversations: null,
   isAddingToStory: false,
-  isAddingPost: false
+  isAddingPost: false,
+  uid: undefined,
+  displayName: undefined
 }
 
 export const authReducer = (state = userDefault, action) => {
-  if (action.type === "SET_USER_DATA") {
-    console.log('set user data ' + action.payload.displayName)
-    return { ...userDefault, ...action.payload }
+  switch (action.type) {
+    case 'SET_USER_DATA':
+      return { ...userDefault, ...action.payload }
+    case 'SIGN_IN':
+      return { ...state, ...action.payload }
+    case 'SIGN_OUT':
+      return { ...userDefault }
+    case 'UPDATE_USER_DATA':
+      return { ...state, ...action.payload }
+    case 'SET_USER_CONVERSATIONS':
+      return { ...state, conversations: action.payload }
+    case 'SET_USER_ADDING_TO_STORY':
+      return { ...state, isAddingToStory: action.payload }
+    case 'SET_USER_ADDING_POST':
+      return { ...state, isAddingPost: action.payload }
+    case 'ADD_USER_CONVERSATION':
+      const conversation = action.payload
+      if (Array.isArray(state.conversations)) { // if conversations exist
+        const conversations = [conversation, ...state.conversations]
+        return { ...state, conversations }
+      } else { // if its the first conversation
+        return { ...state, conversations: [conversation] }
+      }
+    default:
+      return state
   }
-  if (action.type === "SIGN_IN" || action.type === "UPDATE_USER_DATA") {
-    return { ...state, ...action.payload }
-  }
-  if (action.type === "SIGN_OUT") {
-    return userDefault
-  }
-  if (action.type === "SET_USER_CONVERSATIONS") {
-    console.log(action.payload)
-    return { ...state, conversations: action.payload }
-  }
-  if (action.type === "SET_USER_ADDING_TO_STORY") {
-    console.log(' reducer ' + action.payload)
-    return { ...state, isAddingToStory: action.payload }
-  }
-  if (action.type === "SET_USER_ADDING_POST") {
-    console.log(' reducer POST ' + action.payload)
-    return { ...state, isAddingPost: action.payload }
-  }
-  if (action.type === "GET_USER_CONVERSATIONS") {
-    return state.conversations
-  }
-  if (action.type === "ADD_USER_CONVERSATION") {
-    console.log('add conversation', action.payload)
-
-    const conversation = action.payload
-    if (Array.isArray(state.conversations)) { // if conversations exist
-      const conversations = [conversation, ...state.conversations]
-      return { ...state, conversations }
-    } else { // if its the first conversation
-      return { ...state, conversations: [conversation] }
-    }
-  }
-  return state;
 }

@@ -10,7 +10,6 @@ const Header = (props) => {
   const size = 32
   const navigation = useNavigation()
   const user = props.user
-
   const openCamera = () => {
     navigation.navigate('CameraView')
   }
@@ -22,8 +21,6 @@ const Header = (props) => {
       </TouchableOpacity>
       <Logo />
       <Layout style={{ flexDirection: 'row' }}>
-        {!user && <Button onPress={() => navigation.navigate('SignIn')} size='small'>Sign in</Button>}
-
         <TouchableOpacity style={{ alignItems: 'center', flexDirection: 'row' }} onPress={() => navigation.navigate('DrawerMenu')}>
           <Text style={{ marginRight: 10 }}>{user.displayName}</Text>
           <Icon name={'menu-outline'} width={size} height={size} fill='gray' />

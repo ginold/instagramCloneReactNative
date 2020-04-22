@@ -35,30 +35,35 @@ const LastMessages = (props) => {
   const [value, setValue] = React.useState(null);
   const [data, setData] = React.useState(null);
   const [dataCopy, setDataCopy] = React.useState([]);
-  const user = props.user
   const [conversations, setConversations] = React.useState(props.user.conversations)
-  const myId = user.uid
+  const user = props.user
 
   React.useEffect(() => {
-    console.log('conversations')
-    let mounted = true
-    if (mounted) {
-      if (!data) getUsers()
-      if (!conversations && myId) {
-        MessagesApi.getMyConversations().then(conversations => {
-          setConversations(conversations)
-          AuthReduxService.setUserConversations(conversations)
-          setLoading(false)
-        })
-      } else if (!myId) {
-        setConversations(null)
-        setLoading(false)
-      }
-      if (needsUpdate(conversations, props.conversations)) {
-        setConversations(props.conversations)
-      }
-      return () => mounted = false;
+    console.log('conversations ')
+    if (conversations) {
+      console.log('con leng ' + conversations.length)
     }
+    // let mounted = true
+    // if (mounted) {
+    console.log(props.user.displayName)
+    console.log(user.displayName)
+    if (!data) getUsers()
+    if (!conversations && user.uid) {
+      MessagesApi.getMyConversations().then(conversations => {
+        setConversations(conversations)
+        console.log(conversations)
+        AuthReduxService.setUserConversations(conversations)
+        setLoading(false)
+      })
+    } else if (!user.uid) {
+      setConversations(null)
+      setLoading(false)
+    }
+    if (needsUpdate(conversations, props.user.conversations)) {
+      setConversations(props.user.conversations)
+    }
+    // }
+    // return () => mounted = false;
     // const keyboardShowListener = Keyboard.addListener(showEvent, () => {
     //   setPlacement('top');
     // });
@@ -81,7 +86,7 @@ const LastMessages = (props) => {
   const getUsers = () => {
     Auth.getUsers().then(users => {
       for (let i = 0; i <= users.length - 1; i++) {
-        if (users[i].uid === myId) {
+        if (users[i].uid === user.uid) {
           users.splice(i, 1)
           break
         }
@@ -95,7 +100,7 @@ const LastMessages = (props) => {
   const goToConversation = (conversation) => {
     const { withUserId, displayName, avatar } = conversation
     setValue('');
-    navigation.navigate('ChatDetailsView', { withUserId, displayName, avatar })
+    navigation.navigate('ChatDetailsView', { withUserId, displayName, avatar, darkTheme: props.settings.darkTheme })
   };
 
   const onChangeText = (query) => {
@@ -163,7 +168,8 @@ const LastMessages = (props) => {
 };
 const mapStateToProps = state => {
   return {
-    user: state.user
+    user: state.user,
+    settings: state.settings
   }
 }
 export default connect(mapStateToProps)(LastMessages)

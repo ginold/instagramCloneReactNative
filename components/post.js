@@ -26,7 +26,6 @@ export const Post = (props) => {
       </Layout>
       <SliderPostPhotos screen='feed' pictures={post.pictures} navigation={navigation} />
       <Text>{post.description}</Text>
-      <Text> {post.likes.total}</Text>
       {/* NEEED TO ADD A KEY IN ORDER TO RERENDER!@!!!! */}
       <PostActions key={`${post.id}-postactions`} post={post} />
       <Button onPress={navigateDetails}>View more</Button>

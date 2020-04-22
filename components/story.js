@@ -26,10 +26,9 @@ const Story = (props) => {
   const story = props.story
   const details = props.storyDetails
   const avatar = props.avatar ?
-    avatars[props.avatar - 1].require :
-    avatars[story.avatar - 1].require
+    avatars[props.avatar - 1].require : // simple avatar
+    avatars[story.avatar - 1].require // full story with images
   const isUserAddingStory = (story && props.user.isAddingToStory && story.uid === props.user.uid)
-
   React.useEffect(() => {
     if (isUserAddingStory) animateRotation()
     animateScaleIn()
@@ -41,6 +40,7 @@ const Story = (props) => {
       {
         toValue: 1,
         duration: 500,
+        useNativeDriver: true
       }
     ).start()
   }
@@ -71,19 +71,16 @@ const Story = (props) => {
     details ?
       <>
         <TouchableScale
-          style={styles.flex}
           activeScale={0.9}
-          tension={50}
-          friction={7}
           useNativeDriver
-          style={{ marginRight: 10, alignItems: 'center' }}
+          style={{ marginRight: 10, alignItems: 'center', justifyContent: 'center' }}
           onPress={() => navigation.navigate('StoryDetail', { story })}>
 
-          <SharedElement id={`${story.uid}-avatar`} >
+          <SharedElement id={`${story.uid}-avatar`}  >
             <Animated.View style={[scaleStyle, isUserAddingStory ? rotationStyle : null]} ><Avatar size='large' source={avatar} /></Animated.View>
           </SharedElement>
-          <SharedElement id={`${story.uid}-text`}  >
-            <Text numberOfLines={1} >{story.displayName}</Text>
+          <SharedElement id={`${story.uid}-text`}>
+            <Text numberOfLines={1} style={{ marginTop: 5, width: 60, textAlign: 'center' }}>{story.displayName}</Text>
           </SharedElement>
           {story.pictures.length > 0 &&
             <SharedElement id={`${story.uid}-image`} >
@@ -102,12 +99,4 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps)(Story);
 
 const styles = StyleSheet.create({
-  loading: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    flex: 1,
-    justifyContent: 'center',
-    transform: [{ scale: 1.3 }]
-  }
 });

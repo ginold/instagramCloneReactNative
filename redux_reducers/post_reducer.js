@@ -17,11 +17,9 @@ export const postsReducer = (state = postsDefault, action) => {
     return { ...state, allPosts: posts.slice() } // quick fix for props not re-rendering in the feed
   }
   if (action.type === "SET_POSTS") {
-    console.log('posts set')
     return { ...state, allPosts: action.payload }
   }
   if (action.type === "RESET") {
-    console.log('reset posts')
     return postsDefault
   }
   if (action.type === "ADD_POST") {

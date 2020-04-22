@@ -9,6 +9,12 @@ import { YellowBox } from "react-native";
 
 console.ignoredYellowBox = ['Setting a timer:'];
 YellowBox.ignoreWarnings(["Setting a timer"]);
+// console.warn = message => {
+//   if (message.indexOf('Setting a timer') <= -1) {
+//     console.warn(message);
+//   }
+// };
+
 export const myStore = configureStore()
 
 const App = () => (

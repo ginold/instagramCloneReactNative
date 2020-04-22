@@ -47,6 +47,8 @@ class ChatDetailsView extends React.Component {
             uid: this.props.route.params.withUserId,
             displayName: this.props.route.params.displayName
         }
+        this.darkTheme = this.props.route.params.darkTheme
+        console.log(this.darkTheme)
         this.chatId = this.getChatId(this.withUser.uid, auth.currentUser.uid)
 
         this.state = {
@@ -142,7 +144,7 @@ class ChatDetailsView extends React.Component {
     render() {
         const { loading } = this.state
         return (
-            <SafeAreaView style={{ flex: 1, borderBottomColor: 'lightgray', borderBottomWidth: .5 }}>
+            <SafeAreaView style={{ flex: 1, borderBottomColor: 'lightgray', borderBottomWidth: .5, backgroundColor: this.darkTheme ? '#383838' : '#fff' }}>
                 <Layout style={styles.header}>
                     <TouchableOpacity style={{ marginRight: 10 }} onPress={this.goToLastMessages} >
                         <Icon name='arrow-back' height={42} width={42} />
@@ -162,6 +164,11 @@ class ChatDetailsView extends React.Component {
                         user={{
                             _id: this.state.me.uid,
                             name: this.state.me.displayName
+                        }}
+                        listViewProps={{
+                            style: {
+                                backgroundColor: this.darkTheme ? '#383838' : '#fff',
+                            },
                         }}
                     />}
             </SafeAreaView>

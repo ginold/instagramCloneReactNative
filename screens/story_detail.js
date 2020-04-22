@@ -25,9 +25,6 @@ export const StoryDetail = (props) => {
   const height = Dimensions.get('window').height
   const [loading, setLoading] = React.useState(true)
 
-  const nextImage = () => {
-    setPicIndex(picIndex === story.pictures.length - 1 ? 0 : picIndex + 1)
-  }
   const handleImageFromPickImageView = (result) => {
     StoryApi.addPictureToStory(result)
     AuthReduxService.setAddingToStory(true)
@@ -48,6 +45,7 @@ export const StoryDetail = (props) => {
   }
   return (
     <SafeAreaView style={{ justifyContent: 'flex-start', flex: 1 }}>
+      {/* Display shared story image */}
       {story.pictures.length > 0 &&
         <>
           <Layout style={styles.header}>
@@ -76,14 +74,14 @@ export const StoryDetail = (props) => {
           </Layout>
         </>
       }
-
+      {/* No stories => ask if wants to upload. */}
       {(!story.pictures || story.pictures.length === 0) &&
-        <Layout style={{ paddingHorizontal: 30, height: '100%', flexDirection: 'row', alignItems: 'center' }}>
-          <Layout style={{ alignItems: 'center' }}>
+        <Layout style={{ paddingHorizontal: 20, height: '100%', flexDirection: 'row', alignItems: 'center' }}>
+          <Layout style={{ alignItems: 'center', width: '100%', }}>
             <SharedElement id={`${story.uid}-avatar`} >
               <Avatar source={avatars[story.avatar - 1].require} />
             </SharedElement>
-            <Text style={{ marginTop: 20 }}>You don't have any stories. Would you like to add a picture?</Text>
+            <Text style={{ marginTop: 20 }}>You don't have any stories. {"\n"}Would you like to add a picture?</Text>
             <Button onPress={goToCameraView} style={styles.button}>Take a picture</Button>
             <Button onPress={goToImagePickerView} style={styles.button}>Upload a picture</Button>
             <Button style={styles.button} onPress={() => props.navigation.goBack()}>Back</Button>

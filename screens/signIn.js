@@ -9,6 +9,7 @@ import Logo from '../components/logo'
 import Auth from '../api/auth_api'
 import { Button, Input, Layout, Icon, Avatar } from '@ui-kitten/components';
 import { LoadingIndicator } from '../components/loading_indicator';
+import { BackHandler } from 'react-native';
 
 export class SignInScreen extends Component {
 
@@ -23,15 +24,26 @@ export class SignInScreen extends Component {
     this.signIn = this.signIn.bind(this)
     this.navigateCreateAccount = this.navigateCreateAccount.bind(this)
     this.slide = this.slide.bind(this)
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this)
+  }
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
   handleChange = (name, value) => {
     this.setState({ [name]: value });
   };
-
+  handleBackButtonClick() {
+    return true;
+  }
   signIn() {
     this.setState({ error: false, loading: true })
     Auth.signIn(this.state.email.trim(), this.state.password).then(() => {
       this.props.navigation.navigate('MainApp')
+      this.setState({ loading: false, email: '', password: '' })
+      this.slide(0)
     }).catch(err => {
       this.slide(this._width)
       this.setState({ error: true })

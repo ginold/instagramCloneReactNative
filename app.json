@@ -24,7 +24,13 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.ginold.instaclone",
+      "buildNumber": "1.0.0",
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.ginold.instaclone",
+      "versionCode": 1
     },
     "description": "Instagram React Native Clone",
     "githubUrl": "https://github.com/ginold/instagramCloneReactNative",

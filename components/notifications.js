@@ -1,59 +1,23 @@
 import React from 'react';
 import { Vibration, Platform } from 'react-native';
 import { Notifications } from 'expo';
-import * as Permissions from 'expo-permissions';
-import Constants from 'expo-constants';
 import NotificationsApi from '../api/notifications_api'
 import { useNavigation } from '@react-navigation/native';
-import MessagesApi from '../api/messages_api';
 import { connect } from 'react-redux'
+// import messaging from '@react-native-firebase/messaging';
 
+// limited functionality with Expo's notifications => push token is generated onnce per session
+// Would need to reinstall the app, completely refresh or delete cache.
 class NotificationServiceClass extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      expoPushToken: '',
-      notification: {},
-    };
     this.props = props
     this.navigation = props.navigation
     this.navigationState = props.navigationState
+    // this.unsubscribe = messaging().onMessage(async remoteMessage => {
+    //   Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    // });
     this._handleNotification = this._handleNotification.bind(this)
-  }
-  registerForPushNotificationsAsync = async () => {
-    if (Constants.isDevice) {
-      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-      let finalStatus = existingStatus;
-      if (existingStatus !== 'granted') {
-        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-        finalStatus = status;
-      }
-      if (finalStatus !== 'granted') {
-        alert('Failed to get push token for push notification!');
-        return;
-      }
-      console.log('regiseter')
-      token = await Notifications.getExpoPushTokenAsync();
-      NotificationsApi.getPushToken().then(token => {
-        if (!token) {
-          NotificationsApi.updatePushToken(token)
-        }
-      })
-    } else {
-      alert('Must use physical device for Push Notifications');
-    }
-
-    this.createChannel()
-  };
-  createChannel() {
-    if (Platform.OS === 'android') {
-      Notifications.createChannelAndroidAsync('default', {
-        name: 'default',
-        sound: true,
-        priority: 'max',
-        vibrate: [0, 250, 250, 250],
-      });
-    }
   }
   componentDidMount() {
     // Handle notifications that are received or selected while the app
@@ -61,11 +25,12 @@ class NotificationServiceClass extends React.Component {
     // notification (rather than just tapping the app icon to open it),
     // this function will fire on the next tick after the app starts
     // with the notification data.
+    NotificationsApi.registerForPushNotifications()
     this._notificationSubscription = Notifications.addListener(this._handleNotification);
   }
   componentDidUpdate(prevProps) {
-    if (this.props.user.uid && (prevProps.user.uid !== this.props.user.uid)) {
-      this.registerForPushNotificationsAsync()
+    if (prevProps.user.uid !== this.props.user.uid) {
+      // this.registerForPushNotificationsAsync()
     }
   }
 

@@ -1,15 +1,17 @@
 import { auth, db, functions } from './init_firebase'
 import AuthReduxService from '../services/auth_redux_service'
+import NotificationsApi from './notifications_api';
 
 export default {
   authStateChanged: () => {
     return new Promise((resolve, reject) => {
       auth.onAuthStateChanged((user) => {
-        if (user) {
+        if (user && user.displayName) {
+          console.log('auth changed')
           AuthReduxService.setUserData(user)
+          NotificationsApi.registerForPushNotifications()
           resolve(user)
         } else {
-          AuthReduxService.signOut()
           reject()
         }
       });
@@ -41,10 +43,12 @@ export default {
     try {
       return new Promise((resolve, rej) => {
         auth.createUserWithEmailAndPassword(user.email, user.password)
-          .then((res) => {
+          .then(() => {
             addAdditionalInfo(user)
-            addUserPropertiesToCollection(auth.currentUser)
-            AuthReduxService.setUserData({ ...auth.currentUser, displayName: user.name, photoURL: user.avatar })
+            console.log('user created')
+            console.log(auth.currentUser)
+            addUserPropertiesToCollection({ ...auth.currentUser, displayName: user.name })
+            AuthReduxService.setUserData({ ...auth.currentUser, displayName: user.name, photoURL: user.avatar, avatar: user.avatar })
             resolve()
           })
           .catch(err => rej(err))
@@ -77,8 +81,8 @@ export default {
 
 function addUserPropertiesToCollection(user) {
   db.collection("users").doc(user.uid).set({ conversations: [], displayName: user.displayName })
-    .then(function (docRef) {
-      console.log("Document written with ID: ", docRef.id);
+    .then(() => {
+      console.log('user updated')
     })
     .catch(function (error) {
       console.error("Error adding document: ", error);

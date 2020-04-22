@@ -14,7 +14,6 @@ export class AddScreen extends React.Component {
 
   constructor(props) {
     super(props)
-    console.log(props)
     this.imgSize = Dimensions.get('window').width / 4.3
     this.paramPicture = props.route.params ? props.route.params.picture : null
     this.state = {
@@ -50,7 +49,7 @@ export class AddScreen extends React.Component {
     this.setState({ post: { ...post, pictures: imgs } });
   }
   pickImage = async () => {
-    this.navigation.navigate('PickImageView', { handleImageFromPickImageView: this.handleImageFromPickImageView.bind(this), imageForType:'post' })
+    this.navigation.navigate('PickImageView', { handleImageFromPickImageView: this.handleImageFromPickImageView.bind(this), imageForType: 'post' })
   };
   takePhoto = () => {
     this.navigation.navigate('CameraView', { handleImageFromAddPost: this.handleImageFromPickImageView.bind(this), fromPost: true })
@@ -62,12 +61,14 @@ export class AddScreen extends React.Component {
     AuthReduxService.setAddingPost(true)
   }
   onSelectLocation(data) {
-    const coordinates = data.result.geometry.location
-    const name = data.result.name
-    const location = { name, coordinates }
-    let post = this.state.post
-    post.location = location
-    this.setState({ post })
+    if (!data.error_message) {
+      const coordinates = data.result.geometry.location
+      const name = data.result.name
+      const location = { name, coordinates }
+      let post = this.state.post
+      post.location = location
+      this.setState({ post })
+    }
   }
   render() {
     const { pictures } = this.state.post;

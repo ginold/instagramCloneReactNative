@@ -1,13 +1,14 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Text, Layout, Input, Button, Avatar } from '@ui-kitten/components';
-import { StyleSheet, TouchableOpacity, ScrollView, Animated } from 'react-native';
+import { StyleSheet, TouchableOpacity, ScrollView, Animated, KeyboardAvoidingView, View } from 'react-native';
 import Auth from '../api/auth_api';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingIndicator } from '../components/loading_indicator';
 import { avatars } from '../img/avatarRequire'
+import { BackHandler } from 'react-native';
 
 
-export const CreateAccountScreen = ({ navigation }) => {
+export const CreateAccountScreen = ({ navigation, route }) => {
   const initAnimations = () => {
     let anims = []
     for (let i = 0; i <= avatars.length - 1; i++) {
@@ -26,7 +27,17 @@ export const CreateAccountScreen = ({ navigation }) => {
     password: '', name: '', email: '', selectedAvatar: null
   });
 
+  React.useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
 
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+    }
+
+  }, [])
+  const handleBackButtonClick = () => {
+    navigation.goBack()
+  }
   const scaleAvatar = (i) => {
     for (let j = 0; j <= avatars.length - 1; j++) {
       Animated.timing(
@@ -39,7 +50,7 @@ export const CreateAccountScreen = ({ navigation }) => {
     let avatarsEls = []
     for (let i = 0; i <= avatars.length - 1; i++) {
       avatarsEls.push(
-        <Animated.View style={[styles.avatar,
+        <Animated.View key={`${i}-avatar`} style={[styles.avatar,
         {
           transform: [
             {
@@ -73,53 +84,65 @@ export const CreateAccountScreen = ({ navigation }) => {
     setError(false)
     Auth.createUser({ ...values, avatar: selectedAvatar }).then(() => {
       navigation.navigate('Feed')
+      setLoading(false)
     }).catch(err => {
       setLoading(false)
       setError(true)
     })
   }
   return (
-    <SafeAreaView style={{ height: '100%' }}>
+    <SafeAreaView style={{
+      flex
+        : 1
+    }}>
       <Layout style={{ flex: 1 }}>
         <ScrollView
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.scrollViewStyle}>
-          <Button style={[styles.button, { marginBottom: 20 }]} onPress={() => navigation.navigate('SignIn')}>Back to sign in</Button>
+          <KeyboardAvoidingView
+            behavior={Platform.OS == "ios" ? "padding" : null}>
+            <Button style={[styles.button, { marginBottom: 20 }]} onPress={() => navigation.navigate('SignIn')}>Back to sign in</Button>
 
-          <Text style={{ marginBottom: 20 }} category='h3'>Create an account</Text>
-          <Layout style={styles.header}>
-            <Text style={styles.label}>Choose your avatar</Text>
-            <Layout style={[styles.content, styles.avatars]}>
-              {getAvatars()}
+            <Text style={{ marginBottom: 20 }} category='h3'>Create an account</Text>
+            <Layout style={styles.header}>
+              <Text style={styles.label}>Choose your avatar</Text>
+              <Layout style={[styles.content, styles.avatars]}>
+                {getAvatars()}
+              </Layout>
             </Layout>
-          </Layout>
-          <Input
-            label='Name'
-            placeholder='you visible name'
-            value={values.name}
-            onChangeText={(val) => handleChange('name', val)}
-          />
-          <Input
-            label='Email'
-            placeholder='john.doe@example.com'
-            value={values.email}
-            onChangeText={(val) => handleChange('email', val)}
-          />
-          <Input
-            label='Password'
-            placeholder='***'
-            autoCompleteType={'password'}
-            textContentType={'password'}
-            value={values.password}
-            onChangeText={(val) => handleChange('password', val)}
-          />
-          <Layout style={{ alignItems: 'center' }}>
-            <Button style={[styles.createButton, styles.button]} onPress={createAccount}>Create!</Button>
-          </Layout>
+            <Input
+              style={styles.input}
+              label='Name'
+              placeholder='you visible name'
+              value={values.name}
+              onChangeText={(val) => handleChange('name', val)}
+            />
+            <Input
+              style={styles.input}
+
+              label='Email'
+              placeholder='john.doe@example.com'
+              value={values.email}
+              onChangeText={(val) => handleChange('email', val)}
+            />
+            <Input
+              style={styles.input}
+
+              label='Password'
+              placeholder='***'
+              autoCompleteType={'password'}
+              textContentType={'password'}
+              value={values.password}
+              onChangeText={(val) => handleChange('password', val)}
+            />
+            <Layout style={{ alignItems: 'center' }}>
+              <Button style={[styles.createButton, styles.button]} onPress={createAccount}>Create!</Button>
+            </Layout>
+            {(!loading && error) && <Text category='h6' style={{ textAlign: 'center' }}>There was an error.</Text>}
+          </KeyboardAvoidingView>
+          {loading && <View style={styles.loading} ><LoadingIndicator /></View>}
         </ScrollView>
       </Layout>
-      {(!loading && error) && <Text>There was an error.</Text>}
-      {loading && <LoadingIndicator style={styles.loading} />}
     </SafeAreaView >
   );
 };
@@ -127,17 +150,15 @@ let styles = StyleSheet.create({
   createButton: {
     marginTop: 20
   },
+  input: {
+    marginBottom: 10
+  },
   button: {
     width: '50%'
   },
   scrollViewStyle: {
-    flex: 1, justifyContent: 'center',
-    marginHorizontal: 40, marginVertical: 20
-  },
-  container: {
     justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row'
+    marginHorizontal: 40, marginVertical: 20
   },
   avatars: {
     flexDirection: 'row',
@@ -145,17 +166,13 @@ let styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   avatar: {
-
     alignItems: 'center',
     width: '30%',
     marginBottom: 10,
   },
   loading: {
     position: 'absolute',
-    height: '100%',
-    width: '100%',
-    top: 0,
-    left: 0
+    flex: 1, width: '100%', height: '100%'
   },
   label: {
     marginBottom: 10

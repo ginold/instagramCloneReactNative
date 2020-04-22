@@ -73,13 +73,16 @@ export default {
     })
   },
   getMyConversations: () => {
-    console.log('getting conversations')
+    console.log('getting conversations for' + auth.currentUser.displayName)
     return new Promise((resolve, reject) => {
+
       const me = db.collection('users').doc(auth.currentUser.uid).get()
       me.then(doc => {
+        console.log(doc.data())
         const conversations = doc.data().conversations
+        console.log(conversations)
         if (!conversations || conversations.length === 0) {
-          resolve(null)
+          resolve([])
         } else {
           conversations.sort((a, b) => b.createdAt - a.createdAt)
           resolve(conversations)

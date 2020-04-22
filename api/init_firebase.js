@@ -3,7 +3,7 @@ import * as firebase from 'firebase'
 import { decode, encode } from 'base-64'
 import { Platform } from 'react-native'
 require("firebase/functions");
-// require('firebase/messaging')
+// import '@firebase/messaging'
 // const messaging = firebase.messaging();
 
 var firebaseConfig = {

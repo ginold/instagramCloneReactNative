@@ -24,9 +24,9 @@ class PostActions extends React.Component {
         <TouchableOpacity >
           <Icon name={'share-outline'} style={{ marginRight: 5 }} width={this.size} height={this.size} fill='gray' />
         </TouchableOpacity>
-        <TouchableOpacity >
+        {/* <TouchableOpacity >
           <Icon name={'message-circle-outline'} width={this.size} height={this.size} fill='gray' />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Layout style={styles.heartIcon} key={`${post.id}-heart`}>
           <Text key={`${post.id}-likes`}>{`${post.likes.total} likes`}  </Text>
           <TouchableOpacity onPress={this.addLike}>

@@ -32,7 +32,7 @@
       "package": "com.ginold.instaclone",
       "versionCode": 1
     },
-    "description": "Instagram React Native Clone",
+    "description": "A clone of Instagram made in React Native. The  goal was to learn React Native by recreating the most commonly used features of Instagram such as uploading pictures, creating posts, chat and stories.",
     "githubUrl": "https://github.com/ginold/instagramCloneReactNative",
     "notification": {
       "icon": "./assets/icon.png",

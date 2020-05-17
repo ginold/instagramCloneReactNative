@@ -20,7 +20,6 @@
     "@ui-kitten/components": "^4.4.1",
     "@ui-kitten/eva-icons": "^4.4.1",
     "@ui-kitten/moment": "^4.4.1",
-    "axios": "^0.19.2",
     "base-64": "^0.1.0",
     "expo": "^37.0.0",
     "expo-camera": "~8.2.0",

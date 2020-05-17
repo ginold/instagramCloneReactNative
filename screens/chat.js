@@ -60,7 +60,6 @@ class ChatDetailsView extends React.Component {
             isTyping: false
         }
         this.messagesRef = db.collection('messages').doc(this.chatId).collection('messages');
-        this.detectTyping = this.detectTyping.bind(this);
         this.renderFooter = this.renderFooter.bind(this)
         this.goToLastMessages = this.goToLastMessages.bind(this)
     }

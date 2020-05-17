@@ -1,7 +1,6 @@
 # Instagram Clone - React Native
 
-A clone of Instagram made in React Native. 
-
+A clone of Instagram made in React Native. The  goal was to learn React Native by recreating the most commonly used features of Instagram such as uploading pictures, creating posts, chat and stories.
 
 
 ⚠️ Tested only on Android! ⚠️
@@ -46,5 +45,14 @@ It won't run on desktop because of react-native-maps that is not compatible with
 - Make standalone
 - Update UI when user receives a message (UI is only updated when the message is sent)
 
-
-
+## Screenshots
+ <img src="screenshots/screenshot%20(1).png" alt="alt text" width="311" >
+ <img src="screenshots/screenshot%20(4).png" alt="alt text" width="311" >
+  <img src="screenshots/screenshot%20(2).png" alt="alt text" width="311" >
+   <img src="screenshots/screenshot%20(3).png" alt="alt text" width="311" >
+ <img src="screenshots/screenshot%20(6).png" alt="alt text" width="311" >
+ <img src="screenshots/screenshot%20(5).png" alt="alt text" width="311" >
+  <img src="screenshots/screenshot%20(7).png" alt="alt text" width="311" >
+   <img src="screenshots/screenshot%20(8).png" alt="alt text" width="311" >
+   <img src="screenshots/screenshot%20(9).png" alt="alt text" width="311" >
+   <img src="screenshots/screenshot%20(10).png" alt="alt text" width="311" >

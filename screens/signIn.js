@@ -6,7 +6,7 @@ import {
   Dimensions
 } from 'react-native';
 import Logo from '../components/logo'
-import Auth from '../api/auth_api'
+import User from '../api/user_api'
 import { Button, Input, Layout, Icon, Avatar } from '@ui-kitten/components';
 import { LoadingIndicator } from '../components/loading_indicator';
 import { BackHandler } from 'react-native';
@@ -40,7 +40,7 @@ export class SignInScreen extends Component {
   }
   signIn() {
     this.setState({ error: false, loading: true })
-    Auth.signIn(this.state.email.trim(), this.state.password).then(() => {
+    User.signIn(this.state.email.trim(), this.state.password).then(() => {
       this.props.navigation.navigate('MainApp')
       this.setState({ loading: false, email: '', password: '' })
       this.slide(0)

@@ -6,7 +6,7 @@ const userDefault = {
   displayName: undefined
 }
 
-export const authReducer = (state = userDefault, action) => {
+export const userReducer = (state = userDefault, action) => {
   switch (action.type) {
     case 'SET_USER_DATA':
       return { ...userDefault, ...action.payload }

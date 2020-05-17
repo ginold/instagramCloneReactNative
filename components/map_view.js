@@ -1,4 +1,4 @@
-import MapView, { Marker, AnimatedRegion } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import React from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

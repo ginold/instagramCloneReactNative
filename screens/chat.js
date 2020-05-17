@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GiftedChat } from 'react-native-gifted-chat'
 import { db, auth } from '../api/init_firebase'
 import MessagesApi from '../api/messages_api'
-import Auth from '../api/auth_api'
+import User from '../api/user_api'
 import LastMessages from '../components/lastMessages';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Story from '../components/story'
@@ -54,7 +54,7 @@ class ChatDetailsView extends React.Component {
         this.state = {
             createChatOnMessage: false,
             loading: true, displayName: null,
-            me: Auth.getUser(),
+            me: User.getUser(),
             messages: [],
             initialized: false,
             isTyping: false
@@ -63,11 +63,6 @@ class ChatDetailsView extends React.Component {
         this.detectTyping = this.detectTyping.bind(this);
         this.renderFooter = this.renderFooter.bind(this)
         this.goToLastMessages = this.goToLastMessages.bind(this)
-    }
-    detectTyping(text) {
-        //  console.log(text)
-        if (text) this.setState({ isTyping: true })
-        //  this.stopTyping();
     }
     parseSnapshot(snapshot) {
         if (this.state.initialized) {
@@ -159,7 +154,6 @@ class ChatDetailsView extends React.Component {
                         // renderBubble={this.renderBubble}
                         isTyping={this.state.isTyping}
                         messages={this.state.messages}
-                        onInputTextChanged={this.detectTyping}
                         onSend={messages => this.onSend(messages)}
                         user={{
                             _id: this.state.me.uid,

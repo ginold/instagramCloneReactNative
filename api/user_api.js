@@ -1,5 +1,5 @@
 import { auth, db, functions } from './init_firebase'
-import AuthReduxService from '../services/auth_redux_service'
+import UserReduxService from '../services/user_redux_service'
 import NotificationsApi from './notifications_api';
 
 export default {
@@ -8,7 +8,7 @@ export default {
       auth.onAuthStateChanged((user) => {
         if (user && user.displayName) {
           console.log('auth changed')
-          AuthReduxService.setUserData(user)
+          UserReduxService.setUserData(user)
           NotificationsApi.registerForPushNotifications()
           resolve(user)
         } else {
@@ -48,7 +48,7 @@ export default {
             console.log('user created')
             console.log(auth.currentUser)
             addUserPropertiesToCollection({ ...auth.currentUser, displayName: user.name })
-            AuthReduxService.setUserData({ ...auth.currentUser, displayName: user.name, photoURL: user.avatar, avatar: user.avatar })
+            UserReduxService.setUserData({ ...auth.currentUser, displayName: user.name, photoURL: user.avatar, avatar: user.avatar })
             resolve()
           })
           .catch(err => rej(err))

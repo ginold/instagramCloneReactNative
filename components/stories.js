@@ -6,7 +6,7 @@ import StoryApi from '../api/story_api'
 import { db } from '../api/init_firebase'
 import { Snackbar } from 'react-native-paper';
 import { connect } from 'react-redux'
-import AuthReduxService from '../services/auth_redux_service'
+import UserReduxService from '../services/user_redux_service'
 import StoriesReduxService from '../services/stoires_redux_service'
 
 class StoriesClass extends Component {
@@ -48,8 +48,6 @@ class StoriesClass extends Component {
     this.init()
   }
   componentDidUpdate(prevProps) {
-    console.log('update ===================')
-
     // A logout has occured and stories in redux have been reset => reset state stories
     // if a new user has logged in => reinitialize 
     if (prevProps.user.uid !== this.props.user.uid && this.props.stories.length === 0) {
@@ -86,7 +84,7 @@ class StoriesClass extends Component {
     // if its my story, just update the first index of stories
     if (newStory.uid === this.props.user.uid) {
       this.setState({ snackbarVisible: true })
-      AuthReduxService.setAddingToStory(false)
+      UserReduxService.setAddingToStory(false)
       myStory = newStory
       myStory.displayName = 'My story'
       allStories.splice(0, 1)

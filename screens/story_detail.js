@@ -1,5 +1,5 @@
 
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet, Dimensions, Image, StatusBar } from 'react-native';
 import { Avatar, Layout, Text, Icon, Button, ButtonGroup } from '@ui-kitten/components';
 import { avatars } from '../img/avatarRequire'
@@ -7,9 +7,9 @@ import { SharedElement } from 'react-navigation-shared-element';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import StoryApi from '../api/story_api';
-import AuthReduxService from '../services/auth_redux_service'
+import UserReduxService from '../services/user_redux_service'
 import moment from "moment";
-import auth_api from '../api/auth_api';
+import User from '../api/user_api';
 import { LoadingIndicator } from '../components/loading_indicator';
 
 const BackIcon = (props) => (
@@ -27,7 +27,7 @@ export const StoryDetail = (props) => {
 
   const handleImageFromPickImageView = (result) => {
     StoryApi.addPictureToStory(result)
-    AuthReduxService.setAddingToStory(true)
+    UserReduxService.setAddingToStory(true)
     navigation.goBack()
   }
   const goToCameraView = () => {
@@ -50,7 +50,7 @@ export const StoryDetail = (props) => {
         <>
           <Layout style={styles.header}>
             <Button size='small' icon={BackIcon} onPress={() => navigation.goBack()} />
-            {story.uid === auth_api.getUid() && <Button size='small' onPress={goToImagePickerView}>Choose from gallery</Button>}
+            {story.uid === User.getUid() && <Button size='small' onPress={goToImagePickerView}>Choose from gallery</Button>}
             <Layout style={{ backgroundColor: 'transparent', alignItems: 'center' }}>
               <SharedElement id={`${story.uid}-avatar`} >
                 <Avatar source={avatars[story.avatar - 1].require} />
@@ -87,7 +87,6 @@ export const StoryDetail = (props) => {
             <Button style={styles.button} onPress={() => props.navigation.goBack()}>Back</Button>
           </Layout>
         </Layout>
-
       }
     </SafeAreaView>
   );
@@ -119,5 +118,3 @@ const styles = StyleSheet.create({
     width: '50%'
   }
 });
-
-

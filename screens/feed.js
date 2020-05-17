@@ -5,7 +5,7 @@ import Stories from '../components/stories'
 import { SafeAreaView, } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { connect } from 'react-redux'
-import AuthApi from '../api/auth_api'
+import User from '../api/user_api'
 import { LoadingIndicator } from '../components/loading_indicator';
 import NotificationService from '../components/notifications';
 
@@ -14,7 +14,7 @@ const FeedScreen = (props) => {
 
     React.useEffect(() => {
         if (!props.user.uid) {
-            AuthApi.authStateChanged().then((user) => {
+            User.authStateChanged().then((user) => {
                 setIsAuth(true)
             }).catch(() => {
                 setIsAuth(false)
@@ -27,10 +27,6 @@ const FeedScreen = (props) => {
 
     return (
         <SafeAreaView style={{ flex: 1 }} >
-            {/* <LinearGradient
-                colors={['#4c669f', '#3b5998', '#192f6a']}
-                style={{ padding: 15, alignItems: 'center', borderRadius: 5 }}>
-            </LinearGradient > */}
             {isAuth && <>
                 <NotificationService />
                 <Header />

@@ -1,10 +1,10 @@
 import {
   signIn, setUserData, setUserConversations, setAddingPost,
   addUserConversation, signOut, updateUserData, setAddingToStory
-} from '../redux_actions/auth_redux_actions';
+} from '../redux_actions/user_redux_actions';
 import { myStore } from '../App'
 
-export default class AuthReduxService {
+export default class UserReduxService {
   static signIn = () => {
     myStore.dispatch(signIn())
   }

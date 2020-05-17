@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import PostApiService from '../api/posts_api'
 import PostsReduxService from '../services/post_redux_service'
 import { LoadingIndicator } from './loading_indicator'
-import AuthReduxService from '../services/auth_redux_service'
+import UserReduxService from '../services/user_redux_service'
 
 const PostList = (props) => {
     const [posts, setPosts] = React.useState([])
@@ -28,7 +28,7 @@ const PostList = (props) => {
         }
         if (posts.length !== props.posts.length) {
             setPosts(props.posts)
-            AuthReduxService.setAddingPost(false)
+            UserReduxService.setAddingPost(false)
         }
         return () => mounted = false;
     }, [props.posts, props.user.isAddingToStory, props.user.isAddingPost, noPosts])

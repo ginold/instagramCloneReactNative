@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, Layout, Input, Button, Avatar } from '@ui-kitten/components';
 import { StyleSheet, TouchableOpacity, ScrollView, Animated, KeyboardAvoidingView, View } from 'react-native';
-import Auth from '../api/auth_api';
+import User from '../api/user_api';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingIndicator } from '../components/loading_indicator';
 import { avatars } from '../img/avatarRequire'
@@ -82,7 +82,7 @@ export const CreateAccountScreen = ({ navigation, route }) => {
   const createAccount = () => {
     setLoading(true)
     setError(false)
-    Auth.createUser({ ...values, avatar: selectedAvatar }).then(() => {
+    User.createUser({ ...values, avatar: selectedAvatar }).then(() => {
       navigation.navigate('Feed')
       setLoading(false)
     }).catch(err => {

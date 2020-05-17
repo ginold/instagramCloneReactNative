@@ -4,11 +4,10 @@ import { Input, Icon, Layout, Text, Button, ButtonGroup } from '@ui-kitten/compo
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LocationAutocomplete } from '../components/location_autocomplete'
 import PostApiService from '../api/posts_api'
-import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import AuthReduxService from '../services/auth_redux_service'
+import UserReduxService from '../services/user_redux_service'
 
 export class AddScreen extends React.Component {
 
@@ -58,7 +57,7 @@ export class AddScreen extends React.Component {
     this.props.navigation.navigate('Main', { screen: 'Feed' })
     PostApiService.addPost(this.state.post)
     this.setState({ post: this.defaultPost })
-    AuthReduxService.setAddingPost(true)
+    UserReduxService.setAddingPost(true)
   }
   onSelectLocation(data) {
     if (!data.error_message) {

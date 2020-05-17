@@ -6,7 +6,7 @@ import {
   Layout
 } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native'
-import AuthApi from '../api/auth_api';
+import User from '../api/user_api';
 import { useNavigation } from '@react-navigation/native';
 import SettingsService from '../services/settingsService'
 import { connect } from 'react-redux'
@@ -14,7 +14,7 @@ import Story from './story'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StoriesReduxService from '../services/stoires_redux_service'
 import PostReduxService from '../services/post_redux_service'
-import AuthReduxService from '../services/auth_redux_service'
+import UserReduxService from '../services/user_redux_service'
 
 const DrawerMenu = (props) => {
   const navigation = useNavigation()
@@ -57,8 +57,7 @@ const DrawerMenu = (props) => {
     SettingsService.changeTheme(!props.settings.darkTheme)
   }
 
-  const onRouteSelect = (index, e) => {
-    const route = drawerData[index];
+  const onRouteSelect = (index) => {
     switch (index) {
       case 0:
         break
@@ -66,8 +65,8 @@ const DrawerMenu = (props) => {
         navigation.goBack()
         navigation.navigate('SignIn')
         setTimeout(() => {
-          AuthApi.signOut()
-          AuthReduxService.signOut()
+          User.signOut()
+          UserReduxService.signOut()
           StoriesReduxService.reset()
           PostReduxService.reset()
         }, 500);

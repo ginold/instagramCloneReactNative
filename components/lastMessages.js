@@ -3,29 +3,18 @@ import {
   Autocomplete as KittenAutocomplete, Text, Layout, Icon
 } from '@ui-kitten/components';
 import React, { useRef } from 'react';
-import { StyleSheet, Keyboard, Platform, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import Story from './story'
 import MessagesApi from '../api/messages_api'
 import { LoadingIndicator } from './loading_indicator'
-import Auth from '../api/auth_api'
-import { Autocomplete } from 'react-native-autocomplete-input'
+import User from '../api/user_api'
 import { connect } from 'react-redux'
 import { ConversationListItem } from './conversation_list_item';
-import AuthReduxService from '../services/auth_redux_service'
+import UserReduxService from '../services/user_redux_service'
 
 const CloseIcon = (style) => (
   <Icon {...style} name='close' />
 );
-
-const showEvent = Platform.select({
-  android: 'keyboardDidShow',
-  default: 'keyboardWillShow',
-});
-
-const hideEvent = Platform.select({
-  android: 'keyboardDidHide',
-  default: 'keyboardWillHide',
-});
 
 const LastMessages = (props) => {
   const [placement, setPlacement] = React.useState('bottom');
@@ -43,8 +32,6 @@ const LastMessages = (props) => {
     if (conversations) {
       console.log('con leng ' + conversations.length)
     }
-    // let mounted = true
-    // if (mounted) {
     console.log(props.user.displayName)
     console.log(user.displayName)
     if (!data) getUsers()
@@ -52,7 +39,7 @@ const LastMessages = (props) => {
       MessagesApi.getMyConversations().then(conversations => {
         setConversations(conversations)
         console.log(conversations)
-        AuthReduxService.setUserConversations(conversations)
+        UserReduxService.setUserConversations(conversations)
         setLoading(false)
       })
     } else if (!user.uid) {
@@ -62,18 +49,6 @@ const LastMessages = (props) => {
     if (needsUpdate(conversations, props.user.conversations)) {
       setConversations(props.user.conversations)
     }
-    // }
-    // return () => mounted = false;
-    // const keyboardShowListener = Keyboard.addListener(showEvent, () => {
-    //   setPlacement('top');
-    // });
-    // const keyboardHideListener = Keyboard.addListener(hideEvent, () => {
-    //   setPlacement('bottom');
-    // });
-    // return () => {
-    //   keyboardShowListener.remove();
-    //   keyboardHideListener.remove();
-    // };
   }, [props.user])
 
   const needsUpdate = (c1, c2) => {
@@ -84,7 +59,7 @@ const LastMessages = (props) => {
     }
   }
   const getUsers = () => {
-    Auth.getUsers().then(users => {
+    User.getUsers().then(users => {
       for (let i = 0; i <= users.length - 1; i++) {
         if (users[i].uid === user.uid) {
           users.splice(i, 1)

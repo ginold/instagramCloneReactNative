@@ -1,7 +1,7 @@
-import AuthReduxService from '../services/auth_redux_service'
+import UserReduxService from '../services/user_redux_service'
 import { db, auth } from './init_firebase'
 import * as firebase from 'firebase'
-import AuthApi from '../api/auth_api'
+import User from './user_api'
 import NotificationsApi from '../api/notifications_api'
 
 export default {
@@ -51,7 +51,7 @@ export default {
             console.log('last message updated')
             if (user.ref.id === myId) {
               cacheConversations.sort((a, b) => b.createdAt - a.createdAt)
-              AuthReduxService.setUserConversations(cacheConversations)
+              UserReduxService.setUserConversations(cacheConversations)
             }
             break
           }
@@ -98,7 +98,7 @@ function addConversationsToUsers(myId, hisId, chatId, message) {
   const me = db.collection('users').doc(myId)
   const him = db.collection('users').doc(hisId)
   const lastMessage = message
-  const promises = [AuthApi.getUserById(myId), AuthApi.getUserById(hisId)]
+  const promises = [User.getUserById(myId), User.getUserById(hisId)]
 
   Promise.all(promises).then(users => {
     const myConv = { chatId, withUserId: hisId, displayName: users[1].displayName, avatar: users[1].photoURL, lastMessage, createdAt: Date.now() }
@@ -106,7 +106,7 @@ function addConversationsToUsers(myId, hisId, chatId, message) {
 
     me.update({ conversations: firebase.firestore.FieldValue.arrayUnion(myConv) })
     him.update({ conversations: firebase.firestore.FieldValue.arrayUnion(hisConv) })
-    AuthReduxService.addUserConversation(myConv)
+    UserReduxService.addUserConversation(myConv)
   })
 
 }

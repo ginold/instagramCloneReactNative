@@ -1,15 +1,11 @@
 import { auth, db } from './init_firebase'
-import AuthReduxService from '../services/auth_redux_service'
+import UserReduxService from '../services/user_redux_service'
 import { Platform } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
-// import messaging from '@react-native-firebase/messaging';
 
 export default {
-  registerAppWithFCM: async () => {
-    // await messaging().registerDeviceForRemoteMessages();
-  },
   registerForPushNotifications: async () => {
 
     if (Constants.isDevice) {
@@ -44,7 +40,7 @@ export default {
       });
     }
     function updatePushToken(token) {
-      AuthReduxService.updateUserData({ pushToken: token })
+      UserReduxService.updateUserData({ pushToken: token })
       db.collection('users').doc(auth.currentUser.uid).update({ pushToken: token })
     }
     async function getPushToken() {

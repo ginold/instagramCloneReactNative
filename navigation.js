@@ -138,11 +138,3 @@ const SignInScreens = () => (
         <Stack.Screen options={{ ...TransitionPresets.SlideFromRightIOS }} name='CreateAccount' component={CreateAccountScreen} />
     </Stack.Navigator>
 )
-
-// const StoryDetailScreen = () => {
-//     return (
-//         <StackShared.Navigator headerMode='none'>
-//             <StackShared.Screen name='StoryDetailsScreen' options={{ cardStyleInterpolator: forFade }} component={StoryDetail} />
-//         </StackShared.Navigator>
-//     )
-// }

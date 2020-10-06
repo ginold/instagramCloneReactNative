@@ -13,8 +13,8 @@ import { BackHandler } from 'react-native';
 
 export class SignInScreen extends Component {
 
-  constructor(props) {
-    super(props)
+  constructor() {
+    super();
     this._width = Dimensions.get('window').width;
     this.state = {
       email: '', password: '', error: false, loading: false
@@ -26,7 +26,7 @@ export class SignInScreen extends Component {
     this.slide = this.slide.bind(this)
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this)
   }
-  componentWillMount() {
+  componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
   componentWillUnmount() {

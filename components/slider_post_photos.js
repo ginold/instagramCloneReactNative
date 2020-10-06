@@ -1,7 +1,7 @@
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import React, { Component } from 'react';
 import { StyleSheet, Dimensions, Text, StatusBar, SafeAreaView } from 'react-native';
-import SliderEntry from './SliderEntry'
+import SliderEntry from './slider_entry';
 import { Layout } from '@ui-kitten/components';
 import { connect } from 'react-redux'
 

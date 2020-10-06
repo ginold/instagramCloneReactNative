@@ -82,10 +82,12 @@ export const CreateAccountScreen = ({ navigation, route }) => {
   const createAccount = () => {
     setLoading(true)
     setError(false)
+    console.log(values)
     User.createUser({ ...values, avatar: selectedAvatar }).then(() => {
       navigation.navigate('Feed')
       setLoading(false)
     }).catch(err => {
+      console.log(err)
       setLoading(false)
       setError(true)
     })

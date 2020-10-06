@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
+import { View, TouchableOpacity } from 'react-native';
 import { ParallaxImage } from 'react-native-snap-carousel';
 import styles, { getSliderContainerWidth, getShadowStyle, getTextContainerStyle } from '../styles/sliderEntry.styles';
 import { Layout, Text } from '@ui-kitten/components';

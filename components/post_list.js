@@ -16,7 +16,6 @@ const PostList = (props) => {
     const isAddingToStory = props.user.isAddingToStory
 
     React.useEffect(() => {
-        console.log('wewew')
         let mounted = true
         if (props.posts.length === 0 && !noPosts) {
             PostApiService.getPosts().then((posts) => {

@@ -7,8 +7,8 @@ import { ChatScreen } from './screens/chat';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TabNavigation } from './components/tab_navigation'
 import { AddScreen } from './screens/add';
-import { SignInScreen } from './screens/signIn';
-import { CreateAccountScreen } from './screens/createAccount'
+import { SignInScreen } from './screens/sign_in';
+import { CreateAccountScreen } from './screens/create_account'
 import DrawerMenu from './components/drawer'
 import { Animated, Easing } from 'react-native'
 import { StoryDetail } from './screens/story_detail';

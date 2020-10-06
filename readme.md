@@ -4,12 +4,20 @@ A clone of Instagram made in React Native. The  goal was to learn React Native b
 
 ⚠️ Tested only on Android! ⚠️
 
+
+![instagramclone_screencapture](instagramclone_screencapture.gif)
+
+
 ## Installation
 
 Download the Expo app and go to 
 https://expo.io/@ginold/instagramclone
 
 or
+
+or download the Standalone Android APK
+
+https://expo.io/artifacts/758b4e16-81a1-4be1-9c4f-21ec2ee0776e
 
 Use the NPM package manager
 
@@ -36,15 +44,15 @@ It won't run on desktop because of react-native-maps that is not compatible with
 - Real-time chat 
 - Message Notifications
 - Dark theme
-![](https://gyazo.com/eb5c5741b6a9a16c692170a41a49c858.png | width=100)
 - Pull to refresh posts
+- Like posts (Note: an empty heart is only visible when likes are equal to 0 and is filled if it's more than 0, not based on current user likes)
 
 ## Todo
-- Use Firebase Cloud Messaging Notifications
-- Convert to React-Native Firebase 
-- Make standalone
-- Update UI when user receives a message (UI is only updated when the message is sent)
-- More form validation and meaningful error messages
+[] Use Firebase Cloud Messaging Notifications
+[] Convert to React-Native Firebase 
+[] Make standalone
+[] Update UI when user receives a message (UI is only updated when the message is sent)
+[] More form validation and meaningful error messages
 
 ## Screenshots
  <img src="screenshots/screenshot%20(1).png" alt="alt text" width="311" >

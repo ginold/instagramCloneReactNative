@@ -8,7 +8,7 @@ import { GiftedChat } from 'react-native-gifted-chat'
 import { db, auth } from '../api/init_firebase'
 import MessagesApi from '../api/messages_api'
 import User from '../api/user_api'
-import LastMessages from '../components/lastMessages';
+import LastMessages from '../components/last_messages';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Story from '../components/story'
 import { LoadingIndicator } from '../components/loading_indicator'
@@ -109,11 +109,13 @@ class ChatDetailsView extends React.Component {
             to: { uid: this.withUser.uid, displayName: this.withUser.displayName }
         }
         if (this.state.createChatOnMessage) {
+            console.log('creating chat')
             MessagesApi.createChat(this.withUser.uid, message).then(() => {
-                this.setState({ initialized: true, loading: false })
+                this.setState({ initialized: true, loading: false, createChatOnMessage: false })
                 MessagesApi.sendMessage(message, this.chatId)
             })
         } else {
+            console.log('just sending')
             MessagesApi.sendMessage(message, this.chatId)
             MessagesApi.updateLastMessage(message, this.state.me.uid, this.withUser.uid, this.chatId)
         }

@@ -5,15 +5,16 @@ const postsDefault = {
 export const postsReducer = (state = postsDefault, action) => {
   if (action.type === "ADD_LIKE") {
     console.log('add like')
+    console.log(action)
     const postId = action.payload
-    console.log(state)
     let posts = state.allPosts
-    posts.map(post => {
+
+    for (let i = 0; i < posts.length - 1; i++) {
+      const post = posts[i];
       if (post.id === postId) {
-        return { ...post, likes: { total: post.likes.total += 1 } }
+        posts[i] = { ...post, likes: { total: post.likes.total += 1 } }
       }
-      return post
-    })
+    }
     return { ...state, allPosts: posts.slice() } // quick fix for props not re-rendering in the feed
   }
   if (action.type === "SET_POSTS") {
